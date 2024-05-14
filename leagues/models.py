@@ -14,12 +14,20 @@ class League(models.Model):
 
 
 class Teams(models.Model):
+    CONFERENCE = (
+        ('Eastern', 'Eastern'),
+        ('Western', 'Western'),
+    )
+
     name = models.CharField(max_length=255)
-    conference = models.CharField(max_length=255)
+    conference = models.CharField(choices=CONFERENCE, max_length=10)
     division = models.CharField(max_length=255)
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.name
 
 
 class NBATeams(Teams):
