@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from leagues.models import League, NBATeams, NHLTeams
+from leagues.models import League, NBATeams, NHLTeams, NBAStandings
 
 
 class LeagueSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class TeamsSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'conference', 'division')
 
 
-class NBTeamsSerializer(TeamsSerializer):
+class NBATeamsSerializer(TeamsSerializer):
     class Meta(TeamsSerializer.Meta):
         model = NBATeams
 
@@ -22,3 +22,14 @@ class NBTeamsSerializer(TeamsSerializer):
 class NHLTeamsSerializer(TeamsSerializer):
     class Meta(TeamsSerializer.Meta):
         model = NHLTeams
+
+
+class NBAStandingsSerializer(serializers.ModelSerializer):
+    team = NBATeamsSerializer()
+
+    class Meta:
+        model = NBAStandings
+        fields = ('team', 'wins', 'losses', 'winning_percentage', 'points_percentage_game', 'games_back',
+                  'oop_points_percentage_game',
+                  'oop_points_percentage_game', 'home_record', 'conference_record', 'division_record', 'last_ten_games',
+                  'streak')
