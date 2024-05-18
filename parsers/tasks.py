@@ -7,8 +7,12 @@ from parsers.utils import parsing_nba_standings
 @shared_task
 def save_nba_standings():
     for data in parsing_nba_standings():
+        if data['team_name'] == 'Nets':
+            team = NBATeams.objects.get(name='Brooklyn Nets').id
+        else:
+            team = NBATeams.objects.get(name__icontains=data['team_name']).id
         standings_instance, created = NBAStandings.objects.update_or_create(
-            team_id=NBATeams.objects.get(name=data['team_name']).id,
+            team_id=team,
             defaults={
                 'wins': data['wins'],
                 'losses': data['losses'],
