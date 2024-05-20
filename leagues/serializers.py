@@ -30,6 +30,4 @@ class NBAStandingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = NBAStandings
         fields = ('team', 'wins', 'losses', 'winning_percentage', 'points_percentage_game', 'games_back',
-                  'oop_points_percentage_game',
-                  'oop_points_percentage_game', 'home_record', 'conference_record', 'division_record', 'last_ten_games',
-                  'streak')
+                  'oop_points_percentage_game',)
