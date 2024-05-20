@@ -1,48 +1,39 @@
+import re
+import fake_useragent
 import requests
 from bs4 import BeautifulSoup
 
+user = fake_useragent.UserAgent().random
+header = {'user-agent': user}
 
-def parsing_nba_standings():
-    link = 'https://www.foxsports.com/nba/standings'
-    response = requests.get(link).text
+
+def scrape_standings():
+    link = 'https://www.basketball-reference.com/leagues/NBA_2024_standings.html'
+    response = requests.get(link, headers=header).text
     soup = BeautifulSoup(response, 'lxml')
 
     data = []
 
-    for conference in ['0', '1']:
-        conference_table = soup.find('table', id=f'live-standings-table-{conference}')
-        rows = conference_table.find_all('tr')
+    for conference in ['E', 'W']:
+        conference_table = soup.find('table', id=f'confs_standings_{conference}')
+        for row in conference_table.find('tbody').find_all('tr', class_='full_table'):
+            name = row.find('th', {'data-stat': 'team_name'}).get_text()
+            team_name = re.sub(r'[\*\u200b\xa0].*$', '', name).strip()
+            wins = row.find('td', {'data-stat': 'wins'}).get_text()
+            losses = row.find('td', {'data-stat': 'losses'}).get_text()
+            winrate = row.find('td', {'data-stat': 'win_loss_pct'}).get_text()
+            games_back = row.find('td', {'data-stat': 'gb'}).get_text()
+            points = row.find('td', {'data-stat': 'pts_per_g'}).get_text()
+            opp_points = row.find('td', {'data-stat': 'opp_pts_per_g'}).get_text()
 
-        for row in rows:
-            cells = row.find_all('td')
-            if len(cells) == 13:
-                team_name = cells[1].find_all('a')[1].text.strip()
-                wins = cells[2].find('div').text.strip()[:2]
-                losses = cells[2].find('div').text.strip()[3:]
-                winrate = cells[3].find('div').text.strip()
-                gb = cells[4].find('div').text.strip()
-                points = cells[5].find('div').text.strip()
-                opp_points = cells[6].find('div').text.strip()
-                home = cells[7].find('div').text.strip()
-                away = cells[8].find('div').text.strip()
-                conf = cells[9].find('div').text.strip()
-                div = cells[10].find('div').text.strip()
-                L10 = cells[11].find('div').text.strip()
-                streak = cells[12].find('div').text.strip()
+            data.append({
+                'team_name': team_name,
+                'wins': wins,
+                'losses': losses,
+                'winrate': winrate,
+                'gb': games_back,
+                'points': points,
+                'opp_points': opp_points
+            })
 
-                data.append({
-                    'team_name': team_name,
-                    'wins': wins,
-                    'losses': losses,
-                    'winrate': winrate,
-                    'gb': gb,
-                    'points': points,
-                    'opp_points': opp_points,
-                    'home': home,
-                    'away': away,
-                    'conf': conf,
-                    'div': div,
-                    'L10': L10,
-                    'streak': streak
-                })
     return data

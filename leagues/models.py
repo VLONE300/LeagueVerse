@@ -45,10 +45,10 @@ class NHLTeams(Teams):
 class ConferenceStandings(models.Model):
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
-    home_record = models.CharField(max_length=10)
-    away_record = models.CharField(max_length=10)
-    last_ten_games = models.CharField(max_length=10)
-    streak = models.CharField(max_length=10)
+    # home_record = models.CharField(max_length=10)
+    # away_record = models.CharField(max_length=10)
+    # last_ten_games = models.CharField(max_length=10)
+    # streak = models.CharField(max_length=10)
 
     class Meta:
         abstract = True
@@ -60,8 +60,8 @@ class NBAStandings(ConferenceStandings):
     games_back = models.CharField(max_length=10)
     points_percentage_game = models.FloatField()
     oop_points_percentage_game = models.FloatField()
-    conference_record = models.CharField(max_length=10)
-    division_record = models.CharField(max_length=10)
+    # conference_record = models.CharField(max_length=10)
+    # division_record = models.CharField(max_length=10)
 
 
 class NHLStandings(ConferenceStandings):
