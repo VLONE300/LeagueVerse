@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-# Create your views here.
+from nhl.models import NHLTeam
+from nba.serializers import NBATeamsSerializer
+
+
+class NHLTeamsView(ReadOnlyModelViewSet):
+    queryset = NHLTeam.objects.all()
+    serializer_class = NBATeamsSerializer
