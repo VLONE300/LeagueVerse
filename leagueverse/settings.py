@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
 
-    'leagues.apps.LeaguesConfig',
     'parsers.apps.ParsersConfig',
     'users.apps.UsersConfig',
     'nba',
