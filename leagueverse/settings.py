@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'leagues.apps.LeaguesConfig',
     'parsers.apps.ParsersConfig',
     'users.apps.UsersConfig',
+    'nba',
+    'nhl',
+    'core',
 ]
 
 MIDDLEWARE = [
