@@ -1,9 +1,9 @@
-import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from nba.models import NBAStanding, NBATeam,NBAGame
+from nba.models import NBAStanding, NBATeam, NBAGame
 from nba.serializers import NBATeamsSerializer, NBAStandingsSerializer, NBAGamesSerializer
 
 
@@ -39,3 +39,5 @@ class NBAStandingsView(APIView):
 class NBAGameView(ReadOnlyModelViewSet):
     queryset = NBAGame.objects.order_by('-date')
     serializer_class = NBAGamesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['date']
