@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'djoser',
+    'django_celery_beat',
 
     'parsers.apps.ParsersConfig',
     'users.apps.UsersConfig',
