@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -28,6 +30,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     fav_league = models.ManyToManyField(League, blank=True)
+    favorite_teams = models.ManyToManyField(
+        ContentType,
+        through='FavoriteTeam',
+        related_name='favorite_teams',
+        blank=True
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -35,3 +43,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class FavoriteTeam(models.Model):
+    user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        verbose_name = "Favorite Team"
+        verbose_name_plural = "Favorite Teams"
