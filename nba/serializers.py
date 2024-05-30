@@ -6,7 +6,7 @@ from nba.models import NBAStanding, NBATeam, NBAGame
 class NBATeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = NBATeam
-        fields = ('id', 'name', 'conference', 'division')
+        fields = ('id', 'name', 'conference', 'division','team_logo')
 
 
 class NBAStandingsSerializer(serializers.ModelSerializer):

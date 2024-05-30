@@ -3,6 +3,8 @@ from core.models import Team, ConferenceStanding
 
 
 class NBATeam(Team):
+    team_logo = models.ImageField(upload_to="logos/nba")
+
     class Meta:
         verbose_name = "NBA Team"
         verbose_name_plural = "NBA Teams"
