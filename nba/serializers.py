@@ -19,8 +19,8 @@ class NBAStandingsSerializer(serializers.ModelSerializer):
 
 
 class NBAGamesSerializer(serializers.ModelSerializer):
-    visitor_team = serializers.SerializerMethodField()
-    home_team = serializers.SerializerMethodField()
+    visitor_team = NBATeamsSerializer()
+    home_team = NBATeamsSerializer()
 
     class Meta:
         model = NBAGame
