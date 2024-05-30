@@ -6,4 +6,4 @@ from core.models import League
 class LeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = League
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'logo')
