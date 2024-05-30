@@ -37,7 +37,7 @@ class NBAStandingsView(APIView):
 
 
 class NBAGameView(ReadOnlyModelViewSet):
-    queryset = NBAGame.objects.order_by('-date')
+    queryset = NBAGame.objects.filter(status='Finished').order_by('-date')
     serializer_class = NBAGamesSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['date']
