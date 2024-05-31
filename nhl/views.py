@@ -25,7 +25,7 @@ class NHLStandingsView(ReadOnlyModelViewSet):
             conference = standing.team.conference
             if conference not in data:
                 data[conference] = []
-            serializer = NHLStandingsSerializer(standing)
+            serializer = self.get_serializer(standing)
             data[conference].append(serializer.data)
 
         return Response(data)
