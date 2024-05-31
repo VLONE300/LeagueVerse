@@ -14,3 +14,18 @@ class NHLStandingsView(ReadOnlyModelViewSet):
     serializer_class = NHLStandingsSerializer
     queryset = NHLStanding.objects.all()
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            queryset = queryset.order_by(ordering)
+
+        data = {}
+        for standing in queryset:
+            conference = standing.team.conference
+            if conference not in data:
+                data[conference] = []
+            serializer = NHLStandingsSerializer(standing)
+            data[conference].append(serializer.data)
+
+        return Response(data)
