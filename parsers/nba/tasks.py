@@ -2,13 +2,12 @@ from asgiref.sync import async_to_sync
 from celery import shared_task
 
 from nba.models import NBATeam, NBAStanding
-from parsers.nba.utils import get_nba_standings, get_matches
-
+from parsers.nba.utils import get_nba_standings, get_nba_matches
 
 @shared_task
 def parse_nba_games():
     import asyncio
-    asyncio.run(get_matches())
+    asyncio.run(get_nba_matches())
 
 
 @shared_task

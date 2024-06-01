@@ -28,12 +28,14 @@ class NHLGame(models.Model):
     )
 
     visitor_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='visitor_games')
-    visitor_pts = models.IntegerField()
+    visitor_pts = models.CharField(max_length=10)
     home_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='home_games')
-    home_pts = models.IntegerField()
+    home_pts = models.CharField(max_length=10)
     date = models.DateField()
     box_score_link = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(choices=STATUS_GAME, max_length=10)
+    overtime = models.CharField(max_length=10, blank=True, null=True)
+    type = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         verbose_name = "NHL Game"
