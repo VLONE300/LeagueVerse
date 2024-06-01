@@ -56,7 +56,7 @@ async def scrape_season(session: ClientSession, season: int) -> list:
     return standings_pages[::-1]
 
 
-async def update_matches(session: ClientSession, season: int):
+async def update_nba_matches(session: ClientSession, season: int):
     standings_pages = await scrape_season(session, season)
     if not standings_pages:
         return
@@ -109,6 +109,6 @@ async def update_matches(session: ClientSession, season: int):
             )
 
 
-async def get_matches(season=2024):
+async def get_nba_matches(season=2024):
     async with aiohttp.ClientSession() as session:
-        await update_matches(session, season)
+        await update_nba_matches(session, season)

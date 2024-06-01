@@ -1,8 +1,13 @@
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from nhl.models import NHLStanding, NHLTeam
-from parsers.nhl.utils import get_nhl_standings
+from parsers.nhl.utils import get_nhl_standings, get_nhl_matches
 
+
+@shared_task
+def parse_nhl_games():
+    import asyncio
+    asyncio.run(get_nhl_matches())
 
 @shared_task
 def save_nhl_standings():
