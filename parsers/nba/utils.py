@@ -1,16 +1,21 @@
 import re
+
+import aiohttp
 import fake_useragent
 import requests
+from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-user = fake_useragent.UserAgent().random
-header = {'user-agent': user}
+from parsers.fetcher import fetch
 
 
-def scrape_standings():
-    link = 'https://www.basketball-reference.com/leagues/NBA_2024_standings.html'
-    response = requests.get(link, headers=header).text
-    soup = BeautifulSoup(response, 'lxml')
+async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: int = 3):
+    nba_standings_url = 'https://www.basketball-reference.com/leagues/NBA_2024_standings.html'
+    standings_data = await fetch(session, nba_standings_url, sleep=sleep, retries=retries)
+    if standings_data is None:
+        return None
+
+    soup = BeautifulSoup(standings_data, 'lxml')
 
     data = []
 
@@ -37,3 +42,8 @@ def scrape_standings():
             })
 
     return data
+
+
+async def get_nba_standings():
+    async with aiohttp.ClientSession() as session:
+        return await scrape_nba_standings(session)
