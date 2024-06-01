@@ -2,8 +2,7 @@ from asgiref.sync import async_to_sync
 from celery import shared_task
 
 from nba.models import NBATeam, NBAStanding
-from .fetcher import get_matches
-from parsers.nba.utils import get_nba_standings
+from parsers.nba.utils import get_nba_standings, get_matches
 
 
 @shared_task

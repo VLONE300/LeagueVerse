@@ -1,12 +1,12 @@
 import re
-
 import aiohttp
-import fake_useragent
-import requests
+from datetime import datetime
 from aiohttp import ClientSession
+from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
-
+from nba.models import NBAGame, NBATeam
 from parsers.fetcher import fetch
+from parsers.utils import extract_team_name
 
 
 async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: int = 3):
@@ -16,29 +16,20 @@ async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: 
         return None
 
     soup = BeautifulSoup(standings_data, 'lxml')
-
     data = []
 
     for conference in ['E', 'W']:
         conference_table = soup.find('table', id=f'confs_standings_{conference}')
         for row in conference_table.find('tbody').find_all('tr', class_='full_table'):
-            name = row.find('th', {'data-stat': 'team_name'}).get_text()
-            team_name = re.sub(r'[\*\u200b\xa0].*$', '', name).strip()
-            wins = row.find('td', {'data-stat': 'wins'}).get_text()
-            losses = row.find('td', {'data-stat': 'losses'}).get_text()
-            winrate = row.find('td', {'data-stat': 'win_loss_pct'}).get_text()
-            games_back = row.find('td', {'data-stat': 'gb'}).get_text()
-            points = row.find('td', {'data-stat': 'pts_per_g'}).get_text()
-            opp_points = row.find('td', {'data-stat': 'opp_pts_per_g'}).get_text()
-
+            team_name = extract_team_name(row)
             data.append({
                 'team_name': team_name,
-                'wins': wins,
-                'losses': losses,
-                'winrate': winrate,
-                'gb': games_back,
-                'points': points,
-                'opp_points': opp_points
+                'wins': row.find('td', {'data-stat': 'wins'}).get_text(),
+                'losses': row.find('td', {'data-stat': 'losses'}).get_text(),
+                'winrate': row.find('td', {'data-stat': 'win_loss_pct'}).get_text(),
+                'gb': row.find('td', {'data-stat': 'gb'}).get_text(),
+                'points': row.find('td', {'data-stat': 'pts_per_g'}).get_text(),
+                'opp_points': row.find('td', {'data-stat': 'opp_pts_per_g'}).get_text(),
             })
 
     return data
@@ -47,3 +38,77 @@ async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: 
 async def get_nba_standings():
     async with aiohttp.ClientSession() as session:
         return await scrape_nba_standings(session)
+
+
+async def scrape_season(session: ClientSession, season: int) -> list:
+    season_url = f'https://www.basketball-reference.com/leagues/NBA_{season}_games.html'
+    response = await fetch(session, season_url)
+
+    if response is None:
+        return []
+
+    soup = BeautifulSoup(response, 'lxml')
+    block = soup.find('div', class_='filter')
+    links = block.find_all('a')
+    href = [link['href'] for link in links]
+    standings_pages = [f'https://www.basketball-reference.com{link}' for link in href]
+
+    return standings_pages[::-1]
+
+
+async def update_matches(session: ClientSession, season: int):
+    standings_pages = await scrape_season(session, season)
+    if not standings_pages:
+        return
+
+    for month in standings_pages:
+        response = await fetch(session, month)
+        if response is None:
+            continue
+
+        soup = BeautifulSoup(response, 'lxml')
+        table = soup.find('table', id='schedule')
+        if not table:
+            continue
+
+        for row in reversed(table.find('tbody').find_all('tr')):
+            date_game_str = row.find('th', {'data-stat': 'date_game'}).get_text()
+            visitor_team = row.find('td', {'data-stat': 'visitor_team_name'}).get_text()
+            visitor_pts = row.find('td', {'data-stat': 'visitor_pts'}).get_text()
+            home_team = row.find('td', {'data-stat': 'home_team_name'}).get_text()
+            home_pts = row.find('td', {'data-stat': 'home_pts'}).get_text()
+            box_score_cell = row.find('td', {'data-stat': 'box_score_text'})
+            box_score_link = box_score_cell.find('a')['href'] if box_score_cell and box_score_cell.find('a') else None
+            status = 'Finished' if box_score_link else 'Waiting'
+
+            date_game = datetime.strptime(date_game_str, '%a, %b %d, %Y').date()
+
+            visitor_team = await sync_to_async(NBATeam.objects.get)(name=visitor_team)
+            home_team = await sync_to_async(NBATeam.objects.get)(name=home_team)
+
+            match_exists = await sync_to_async(
+                NBAGame.objects.filter(
+                    date=date_game.strftime('%Y-%m-%d'),
+                    visitor_team=visitor_team,
+                    home_team=home_team,
+                    box_score_link=box_score_link
+                ).exists)()
+            if match_exists:
+                continue
+
+            await sync_to_async(NBAGame.objects.update_or_create)(
+                date=date_game.strftime('%Y-%m-%d'),
+                visitor_team=visitor_team,
+                home_team=home_team,
+                defaults={
+                    'visitor_pts': visitor_pts,
+                    'home_pts': home_pts,
+                    'box_score_link': box_score_link,
+                    'status': status
+                }
+            )
+
+
+async def get_matches(season=2024):
+    async with aiohttp.ClientSession() as session:
+        await update_matches(session, season)
