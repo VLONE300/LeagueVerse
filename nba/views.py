@@ -12,25 +12,22 @@ class NBATeamsView(ReadOnlyModelViewSet):
     serializer_class = NBATeamsSerializer
 
 
-class NBAStandingsView(APIView):
+class NBAStandingsView(ReadOnlyModelViewSet):
     serializer_class = NBAStandingsSerializer
+    queryset = NBAStanding.objects.all()
 
-    def get_queryset(self):
-        queryset = NBAStanding.objects.all()
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
         ordering = self.request.query_params.get('ordering', None)
         if ordering:
             queryset = queryset.order_by(ordering)
-        return queryset
 
-    def get(self, request):
-        queryset = self.get_queryset()
         data = {}
-
         for standing in queryset:
             conference = standing.team.conference
             if conference not in data:
                 data[conference] = []
-            serializer = NBAStandingsSerializer(standing)
+            serializer = self.get_serializer(standing)
             data[conference].append(serializer.data)
 
         return Response(data)
