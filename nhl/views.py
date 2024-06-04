@@ -1,8 +1,8 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-
-from nhl.models import NHLTeam, NHLStanding
-from nhl.serializers import NHLTeamsSerializer, NHLStandingsSerializer
+from nhl.models import NHLTeam, NHLStanding, NHLGame
+from nhl.serializers import NHLTeamsSerializer, NHLStandingsSerializer, NHLGamesSerializer
 
 
 class NHLTeamsView(ReadOnlyModelViewSet):
@@ -29,3 +29,17 @@ class NHLStandingsView(ReadOnlyModelViewSet):
             data[conference].append(serializer.data)
 
         return Response(data)
+
+
+class NHLScoresView(ReadOnlyModelViewSet):
+    queryset = NHLGame.objects.filter(status='Finished').order_by('-date')
+    serializer_class = NHLGamesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['date']
+
+
+class NHLScheduleView(ReadOnlyModelViewSet):
+    queryset = NHLGame.objects.filter(status='Waiting').order_by('-date')
+    serializer_class = NHLGamesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['date']
