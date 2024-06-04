@@ -33,3 +33,18 @@ class ConferenceStanding(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Game(models.Model):
+    STATUS_GAME = (
+        ('finished', 'Finished'),
+        ('waiting', 'Waiting'),
+    )
+    visitor_pts = models.CharField(max_length=10)
+    home_pts = models.CharField(max_length=10)
+    date = models.DateField()
+    box_score_link = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(choices=STATUS_GAME, max_length=10)
+
+    class Meta:
+        abstract = True
