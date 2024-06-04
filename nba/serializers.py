@@ -24,7 +24,7 @@ class NBAGamesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NBAGame
-        fields = ('date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'status')
+        fields = ('date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'status',)
 
     def get_visitor_team(self, obj):
         return obj.visitor_team.name
