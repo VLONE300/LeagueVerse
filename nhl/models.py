@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Team, ConferenceStanding
+from core.models import Team, ConferenceStanding, Game
 
 
 class NHLTeam(Team):
@@ -21,22 +21,15 @@ class NHLStanding(ConferenceStanding):
     wins_of_regulation = models.IntegerField()
 
 
-class NHLGame(models.Model):
-    STATUS_GAME = (
-        ('finished', 'Finished'),
-        ('waiting', 'Waiting'),
-    )
-
+class NHLGame(Game):
     visitor_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='visitor_games')
-    visitor_pts = models.CharField(max_length=10)
     home_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='home_games')
-    home_pts = models.CharField(max_length=10)
-    date = models.DateField()
-    box_score_link = models.CharField(max_length=255, blank=True, null=True)
-    status = models.CharField(choices=STATUS_GAME, max_length=10)
     overtime = models.CharField(max_length=10, blank=True, null=True)
     type = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         verbose_name = "NHL Game"
         verbose_name_plural = "NHL Games"
+
+    def __str__(self):
+        return f'{self.date} {self.visitor_team} - {self.home_team}'
