@@ -109,6 +109,11 @@ async def update_nba_matches(session: ClientSession, season: int):
             )
 
 
+async def scrape_box_score(session: ClientSession, box_score_link):
+    response = await fetch(session, box_score_link)
+
+
+
 async def get_nba_matches(season=2024):
     async with aiohttp.ClientSession() as session:
         await update_nba_matches(session, season)
