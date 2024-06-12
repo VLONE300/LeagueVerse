@@ -79,7 +79,10 @@ async def update_nba_matches(session: ClientSession, season: int):
             home_pts = row.find('td', {'data-stat': 'home_pts'}).get_text()
             box_score_cell = row.find('td', {'data-stat': 'box_score_text'})
             box_score_link = box_score_cell.find('a')['href'] if box_score_cell and box_score_cell.find('a') else None
-            status = 'Finished' if box_score_link else 'Waiting'
+            # status = 'Finished' if box_score_link else 'Waiting'
+            if box_score_link:
+                await scrape_box_score(session, box_score_link)
+                status = 'Finished'
 
             date_game = datetime.strptime(date_game_str, '%a, %b %d, %Y').date()
 
@@ -109,9 +112,56 @@ async def update_nba_matches(session: ClientSession, season: int):
             )
 
 
-async def scrape_box_score(session: ClientSession, box_score_link):
-    response = await fetch(session, box_score_link)
+async def scrape_nba_box_score(session: ClientSession, box_score_link):
+    full_url = f'https://www.basketball-reference.com{box_score_link}'
+    response = await fetch(session, full_url)
+    soup = BeautifulSoup(response, 'lxml')
+    tables = soup.find_all('table', id=re.compile(r'box-[A-Z]{3}-game-basic'))
+    for i in tables:
+        caption = i.find('caption').text
+        team_name = caption[:caption.index('Basic') - 1]
+        stats = i.find('tfoot').find_all('tr')
+        for stat in stats:
+            field_goals = stat.find('td', {'data-stat': 'fg'}).get_text()
+            field_goal_attempts = stat.find('td', {'data-stat': 'fga'}).get_text()
+            field_goals_percentage = stat.find('td', {'data-stat': 'fg_pct'}).get_text()
+            three_point_field_goals = stat.find('td', {'data-stat': 'fg3'}).get_text()
+            three_point_field_goal_attempts = stat.find('td', {'data-stat': 'fg3a'}).get_text()
+            three_point_field_goals_percentage = stat.find('td', {'data-stat': 'fg3_pct'}).get_text()
+            free_throws = stat.find('td', {'data-stat': 'ft'}).get_text()
+            free_throw_attempts = stat.find('td', {'data-stat': 'fta'}).get_text()
+            free_throw_percentage = stat.find('td', {'data-stat': 'ft_pct'}).get_text()
+            personal_fouls = stat.find('td', {'data-stat': 'pf'}).get_text()
+            total_rebounds = stat.find('td', {'data-stat': 'trb'}).get_text()
+            offensive_rebounds = stat.find('td', {'data-stat': 'orb'}).get_text()
+            turnovers = stat.find('td', {'data-stat': 'tov'}).get_text()
+            assists = stat.find('td', {'data-stat': 'ast'}).get_text()
+            steals = stat.find('td', {'data-stat': 'stl'}).get_text()
+            blocks = stat.find('td', {'data-stat': 'blk'}).get_text()
 
+            print({'team_name': team_name,
+                   'field_goals': field_goals,
+                   'field_goal_attempts': field_goal_attempts,
+                   'field_goals_percentage': field_goals_percentage,
+                   'three_point_field_goals': three_point_field_goals,
+                   'three_point_field_goal_attempts': three_point_field_goal_attempts,
+                   'three_point_field_goals_percentage': three_point_field_goals_percentage,
+                   'free_throws': free_throws,
+                   'free_throw_attempts': free_throw_attempts,
+                   'free_throw_percentage': free_throw_percentage,
+                   'personal_fouls': personal_fouls,
+                   'total_rebounds': total_rebounds,
+                   'offensive_rebounds': offensive_rebounds,
+                   'turnovers': turnovers,
+                   'assists': assists,
+                   'steals': steals,
+                   'blocks': blocks
+                   })
+
+
+async def get_nba_box_score():
+    async with aiohttp.ClientSession() as session:
+        await scrape_nba_box_score(session, '/boxscores/202406060BOS.html')
 
 
 async def get_nba_matches(season=2024):
