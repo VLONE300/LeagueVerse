@@ -91,7 +91,6 @@ async def update_nba_matches(session: ClientSession, season: int):
                     date=date_game.strftime('%Y-%m-%d'),
                     visitor_team=visitor_team,
                     home_team=home_team,
-                    box_score_link=box_score_link
                 ).exists)()
             if match_exists:
                 continue
@@ -103,7 +102,6 @@ async def update_nba_matches(session: ClientSession, season: int):
                 defaults={
                     'visitor_pts': visitor_pts,
                     'home_pts': home_pts,
-                    'box_score_link': box_score_link,
                     'status': status
                 }
             )
