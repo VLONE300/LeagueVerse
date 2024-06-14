@@ -22,8 +22,9 @@ class NBAStanding(ConferenceStanding):
 
 
 class NBAGame(Game):
-    visitor_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name='visitor_games')
-    home_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name='home_games')
+    visitor_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name="visitor_team")
+    home_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name="home_team")
+    box_score = models.ForeignKey("NBABoxScore", on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name = "NBA Game"
@@ -34,9 +35,8 @@ class NBAGame(Game):
 
 
 class NBABoxScore(models.Model):
-    game = models.OneToOneField("NBAGame", on_delete=models.CASCADE)
-    home_team_stats = models.ForeignKey("NBATeamStats", on_delete=models.CASCADE, related_name='home_box_scores')
-    visitor_team_stats = models.ForeignKey("NBATeamStats", on_delete=models.CASCADE, related_name='visitor_box_scores')
+    home_team_stats = models.ForeignKey("NBATeamStats", on_delete=models.CASCADE, related_name="home_team_stats")
+    visitor_team_stats = models.ForeignKey("NBATeamStats", on_delete=models.CASCADE, related_name="visitor_team_stats")
 
 
 class NBATeamStats(models.Model):

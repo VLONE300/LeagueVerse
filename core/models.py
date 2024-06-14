@@ -38,8 +38,8 @@ class Game(models.Model):
         ('finished', 'Finished'),
         ('waiting', 'Waiting'),
     )
-    visitor_pts = models.CharField(max_length=10)
-    home_pts = models.CharField(max_length=10)
+    visitor_pts = models.IntegerField()
+    home_pts = models.IntegerField()
     date = models.DateField()
     status = models.CharField(choices=STATUS_GAME, max_length=10)
 
