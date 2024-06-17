@@ -59,9 +59,11 @@ async def update_nhl_matches(session: ClientSession):
         for game in reversed(games.find('tbody').find_all('tr')):
             date_game_str = game.find('th', {'data-stat': 'date_game'}).text
             visitor_team = game.find('td', {'data-stat': 'visitor_team_name'}).text
-            visitor_pts = int(game.find('td', {'data-stat': 'visitor_goals'}).text)
+            visitor_pts = game.find('td', {'data-stat': 'visitor_goals'}).text
+            visitor_pts = int(visitor_pts) if visitor_pts.isdigit() else None
             home_team = game.find('td', {'data-stat': 'home_team_name'}).text
-            home_pts = int(game.find('td', {'data-stat': 'home_goals'}).text)
+            home_pts = game.find('td', {'data-stat': 'home_goals'}).text
+            home_pts = int(home_pts) if home_pts.isdigit() else None
             overtime = game.find('td', {'data-stat': 'overtimes'}).text
             box_score_cell = game.find('th', {'data-stat': 'date_game'})
             box_score_link = box_score_cell.find('a')['href'] if box_score_cell.find('a') else None
