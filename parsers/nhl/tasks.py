@@ -4,10 +4,10 @@ from nhl.models import NHLStanding, NHLTeam
 from parsers.nhl.utils import get_nhl_standings, get_nhl_matches
 
 
-@shared_task
-def parse_nhl_games():
-    import asyncio
-    asyncio.run(get_nhl_matches())
+# @shared_task
+# def parse_nhl_games():
+#     import asyncio
+#     asyncio.run(get_nhl_matches())
 
 @shared_task
 def save_nhl_standings():

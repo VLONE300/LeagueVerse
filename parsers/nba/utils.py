@@ -92,6 +92,7 @@ async def update_nba_matches(session: ClientSession, season: int):
 
         for row in reversed(table.find('tbody').find_all('tr')):
             date_game_str = row.find('th', {'data-stat': 'date_game'}).get_text()
+            time = row.find('td', {'data-stat': 'game_start_time'}).get_text()
             visitor_team = row.find('td', {'data-stat': 'visitor_team_name'}).get_text()
             visitor_pts = row.find('td', {'data-stat': 'visitor_pts'}).get_text()
             visitor_pts = int(visitor_pts) if visitor_pts.isdigit() else None
@@ -100,7 +101,9 @@ async def update_nba_matches(session: ClientSession, season: int):
             home_pts = int(home_pts) if home_pts.isdigit() else None
             box_score_cell = row.find('td', {'data-stat': 'box_score_text'})
             box_score_link = box_score_cell.find('a')['href'] if box_score_cell and box_score_cell.find('a') else None
+            arena = row.find('td', {'data-stat': 'arena_name'}).get_text()
             status = 'Finished' if box_score_link else 'Waiting'
+
             box_score = None
 
             if box_score_link:
@@ -147,7 +150,6 @@ async def update_nba_matches(session: ClientSession, season: int):
                             'steals': steals,
                             'blocks': blocks
                         })
-                print(stats)
                 visitor_team_stats = await sync_to_async(NBATeamStats.objects.create)(**stats[0])
                 home_team_stats = await sync_to_async(NBATeamStats.objects.create)(**stats[1])
 
@@ -179,7 +181,9 @@ async def update_nba_matches(session: ClientSession, season: int):
                     'visitor_pts': visitor_pts,
                     'home_pts': home_pts,
                     'box_score': box_score,
-                    'status': status
+                    'status': status,
+                    'time': time,
+                    'arena': arena
                 }
             )
 
