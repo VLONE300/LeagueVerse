@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.db import models
-
 
 class League(models.Model):
     name = models.CharField(max_length=55)
@@ -40,10 +38,9 @@ class Game(models.Model):
         ('finished', 'Finished'),
         ('waiting', 'Waiting'),
     )
-    visitor_pts = models.CharField(max_length=10)
-    home_pts = models.CharField(max_length=10)
+    visitor_pts = models.IntegerField(blank=True, null=True)
+    home_pts = models.IntegerField(blank=True, null=True)
     date = models.DateField()
-    box_score_link = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(choices=STATUS_GAME, max_length=10)
 
     class Meta:
