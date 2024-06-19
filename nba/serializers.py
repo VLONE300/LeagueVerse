@@ -31,3 +31,9 @@ class NBAGamesSerializer(serializers.ModelSerializer):
 
     def get_home_team(self, obj):
         return obj.home_team.name
+
+
+class NBAScheduleSerializer(NBAGamesSerializer):
+    class Meta:
+        model = NBAGame
+        fields = NBAGamesSerializer.Meta.fields + ('time', 'arena')
