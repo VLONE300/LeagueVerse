@@ -37,3 +37,9 @@ class NBAScheduleSerializer(NBAGamesSerializer):
     class Meta:
         model = NBAGame
         fields = NBAGamesSerializer.Meta.fields + ('time', 'arena')
+
+
+class NBAGamesDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NBAGame
+        fields = ('date',)
