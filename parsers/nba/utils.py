@@ -1,78 +1,18 @@
 import re
 import aiohttp
-from datetime import datetime
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
-from nba.models import NBAGame, NBATeam, NBABoxScore, NBATeamStats, NBAStanding
+from nba.models import NBAGame, NBATeam, NBABoxScore, NBATeamStats
 from parsers.fetcher import fetch
-from parsers.utils import extract_team_name, date_str_to_date
-
-
-async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: int = 3):
-    nba_standings_url = 'https://www.basketball-reference.com/leagues/NBA_2024_standings.html'
-    standings_data = await fetch(session, nba_standings_url, sleep=sleep, retries=retries)
-    if standings_data is None:
-        return None
-
-    soup = BeautifulSoup(standings_data, 'lxml')
-    data = []
-
-    for conference in ['E', 'W']:
-        conference_table = soup.find('table', id=f'confs_standings_{conference}')
-        for row in conference_table.find('tbody').find_all('tr', class_='full_table'):
-            team_name = extract_team_name(row)
-            data.append({
-                'team_name': team_name,
-                'wins': row.find('td', {'data-stat': 'wins'}).get_text(),
-                'losses': row.find('td', {'data-stat': 'losses'}).get_text(),
-                'winrate': row.find('td', {'data-stat': 'win_loss_pct'}).get_text(),
-                'gb': row.find('td', {'data-stat': 'gb'}).get_text(),
-                'points': row.find('td', {'data-stat': 'pts_per_g'}).get_text(),
-                'opp_points': row.find('td', {'data-stat': 'opp_pts_per_g'}).get_text(),
-            })
-    return data
-
-
-async def update_nba_standings(session: aiohttp.ClientSession):
-    standings_data = await scrape_nba_standings(session)
-    if standings_data is None:
-        return
-
-    for data in standings_data:
-        team = await sync_to_async(NBATeam.objects.get)(name=data['team_name'])
-        await sync_to_async(NBAStanding.objects.update_or_create)(
-            team=team,
-            defaults={
-                'wins': data['wins'],
-                'losses': data['losses'],
-                'winning_percentage': data['winrate'],
-                'games_back': data['gb'],
-                'points_percentage_game': data['points'],
-                'oop_points_percentage_game': data['opp_points'],
-            }
-        )
+from parsers.nba.games import scrape_season
+from parsers.nba.standings import update_nba_standings
+from parsers.utils import date_str_to_date
 
 
 async def get_nba_standings():
     async with aiohttp.ClientSession() as session:
         await update_nba_standings(session)
-
-
-async def scrape_season(session: ClientSession, season: int) -> list:
-    season_url = f'https://www.basketball-reference.com/leagues/NBA_{season}_games.html'
-    response = await fetch(session, season_url)
-
-    if response is None:
-        return []
-
-    soup = BeautifulSoup(response, 'lxml')
-    block = soup.find('div', class_='filter')
-    links = block.find_all('a')
-    href = [link['href'] for link in links]
-    standings_pages = [f'https://www.basketball-reference.com{link}' for link in href]
-
-    return standings_pages[::-1]
 
 
 async def update_nba_matches(session: ClientSession, season: int):
@@ -113,31 +53,40 @@ async def update_nba_matches(session: ClientSession, season: int):
 
             visitor_team = await sync_to_async(NBATeam.objects.get)(name=visitor_team)
             home_team = await sync_to_async(NBATeam.objects.get)(name=home_team)
+            print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
 
-            match_exists = await sync_to_async(
-                NBAGame.objects.filter(
-                    date=date_game,
-                    visitor_team=visitor_team,
-                    home_team=home_team,
-                    status='Finished'
-                ).exists)()
-            if match_exists:
+            if await is_game_exist(date_game, visitor_team, home_team):
                 continue
 
-            print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
-            await sync_to_async(NBAGame.objects.update_or_create)(
-                date=date_game.strftime('%Y-%m-%d'),
-                visitor_team=visitor_team,
-                home_team=home_team,
-                defaults={
-                    'visitor_pts': visitor_pts,
-                    'home_pts': home_pts,
-                    'box_score': box_score,
-                    'status': status,
-                    'time': time,
-                    'arena': arena
-                }
-            )
+            await save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
+                                arena)
+
+
+async def save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, arena):
+    await sync_to_async(NBAGame.objects.update_or_create)(
+        date=date_game.strftime('%Y-%m-%d'),
+        visitor_team=visitor_team,
+        home_team=home_team,
+        defaults={
+            'visitor_pts': visitor_pts,
+            'home_pts': home_pts,
+            'box_score': box_score,
+            'status': status,
+            'time': time,
+            'arena': arena
+        }
+    )
+
+
+async def is_game_exist(date_game, visitor_team, home_team):
+    match_exists = await sync_to_async(
+        NBAGame.objects.filter(
+            date=date_game,
+            visitor_team=visitor_team,
+            home_team=home_team,
+            status='Finished'
+        ).exists)()
+    return match_exists
 
 
 async def save_nba_box_score(visitor_team_stats, home_team_stats):
