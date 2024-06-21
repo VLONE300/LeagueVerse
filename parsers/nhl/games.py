@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 
 from nhl.models import NHLTeam, NHLGame, NHLBoxScore, NHLTeamStats
 from parsers.fetcher import fetch
-from parsers.utils import date_str_to_date
 
 
 async def update_nhl_matches(session: ClientSession):
@@ -36,6 +35,12 @@ async def update_nhl_matches(session: ClientSession):
             game_type = 'Regular Season' if table == '' else 'Playoff'
             status = 'Finished' if box_score_link else 'Waiting'
 
+            visitor_team = await sync_to_async(NHLTeam.objects.get)(name=visitor_team)
+            home_team = await sync_to_async(NHLTeam.objects.get)(name=home_team)
+
+            if await is_game_exist(date_game, visitor_team, home_team):
+                break
+
             box_score = None
 
             if box_score_link:
@@ -43,11 +48,7 @@ async def update_nhl_matches(session: ClientSession):
                 visitor_team_stats, home_team_stats = await save_nhl_team_stats(stats)
                 box_score = await save_nhl_box_score(visitor_team_stats, home_team_stats)
 
-            visitor_team = await sync_to_async(NHLTeam.objects.get)(name=visitor_team)
-            home_team = await sync_to_async(NHLTeam.objects.get)(name=home_team)
             print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
-            if await is_game_exist(date_game, visitor_team, home_team):
-                continue
 
             await save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
                                 overtime, game_type)
@@ -58,7 +59,10 @@ async def is_game_exist(date_game, visitor_team, home_team):
         NHLGame.objects.filter(
             date=date_game,
             visitor_team=visitor_team,
+            visitor_pts__isnull=False,
             home_team=home_team,
+            home_pts__isnull=False,
+            box_score__isnull=False,
             status='Finished'
         ).exists)()
     return match_exists
