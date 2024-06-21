@@ -23,8 +23,8 @@ app.conf.beat_schedule = {
         'task': 'parsers.nba.tasks.parse_nba_games',
         'schedule': crontab(minute='*/5'),  # Каждый час
     },
-    # 'parse-nhl-games-every-hour': {
-    #     'task': 'parsers.nhl.tasks.parse_nhl_games',
-    #     'schedule': crontab(minute='*/5'),  # Каждый час
-    # },
+    'parse-nhl-games-every-hour': {
+        'task': 'parsers.nhl.tasks.parse_nhl_games',
+        'schedule': crontab(minute='*/5'),  # Каждый час
+    },
 }

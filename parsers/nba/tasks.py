@@ -5,7 +5,6 @@ from parsers.nba.utils import get_nba_standings, get_nba_matches
 
 @shared_task
 def parse_nba_games():
-    import asyncio
     asyncio.run(get_nba_matches())
 
 

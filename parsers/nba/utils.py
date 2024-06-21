@@ -44,19 +44,18 @@ async def update_nba_matches(session: ClientSession, season: int):
             arena = row.find('td', {'data-stat': 'arena_name'}).get_text()
             status = 'Finished' if box_score_link else 'Waiting'
 
+            visitor_team = await sync_to_async(NBATeam.objects.get)(name=visitor_team)
+            home_team = await sync_to_async(NBATeam.objects.get)(name=home_team)
+
+            if await is_game_exist(date_game, visitor_team, home_team):
+                break
+
             box_score = None
 
             if box_score_link:
                 stats = await scrape_nba_box_score_link(session, box_score_link)
                 visitor_team_stats, home_team_stats = await save_nba_team_stats(stats)
                 box_score = await save_nba_box_score(visitor_team_stats, home_team_stats)
-
-            visitor_team = await sync_to_async(NBATeam.objects.get)(name=visitor_team)
-            home_team = await sync_to_async(NBATeam.objects.get)(name=home_team)
-            print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
-
-            if await is_game_exist(date_game, visitor_team, home_team):
-                continue
 
             await save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
                                 arena)
@@ -83,7 +82,10 @@ async def is_game_exist(date_game, visitor_team, home_team):
         NBAGame.objects.filter(
             date=date_game,
             visitor_team=visitor_team,
+            visitor_pts__isnull=False,
             home_team=home_team,
+            home_pts__isnull=False,
+            box_score__isnull=False,
             status='Finished'
         ).exists)()
     return match_exists
