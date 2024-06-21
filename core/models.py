@@ -38,12 +38,17 @@ class Game(models.Model):
         ('finished', 'Finished'),
         ('waiting', 'Waiting'),
     )
+    TYPE_GAME = (
+        ('regular season', 'Regular Season'),
+        ('playoff', 'Playoff'),
+    )
     visitor_pts = models.IntegerField(blank=True, null=True)
     home_pts = models.IntegerField(blank=True, null=True)
     date = models.DateField()
     time = models.CharField(max_length=20, blank=True)
     status = models.CharField(choices=STATUS_GAME, max_length=10)
     arena = models.CharField(max_length=100, blank=True)
+    type = models.CharField(max_length=100, blank=True)
 
     class Meta:
         abstract = True
