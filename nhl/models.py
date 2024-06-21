@@ -25,7 +25,7 @@ class NHLGame(Game):
     visitor_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='visitor_games')
     home_team = models.ForeignKey(NHLTeam, on_delete=models.CASCADE, related_name='home_games')
     overtime = models.CharField(max_length=10, blank=True, null=True)
-    box_score = models.IntegerField(blank=True, null=True)
+    box_score = models.ForeignKey('NHLBoxScore', on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name = "NHL Game"

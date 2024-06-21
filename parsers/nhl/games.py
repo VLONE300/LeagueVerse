@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
@@ -20,8 +21,9 @@ async def update_nhl_matches(session: ClientSession):
     for table in ('_playoffs', ''):
         games = soup.find('table', id=f'games{table}')
         for game in reversed(games.find('tbody').find_all('tr')):
-            date_game = date_str_to_date(game.find('th', {'data-stat': 'date_game'}).text)
-            time = game.find('th', {'data-stat': 'time_game'}).text
+            date_str = game.find('th', {'data-stat': 'date_game'}).text
+            date_game = datetime.strptime(date_str, '%Y-%m-%d').date()
+            time = game.find('td', {'data-stat': 'time_game'}).text
             visitor_team = game.find('td', {'data-stat': 'visitor_team_name'}).text
             visitor_pts = game.find('td', {'data-stat': 'visitor_goals'}).text
             visitor_pts = int(visitor_pts) if visitor_pts.isdigit() else None
@@ -43,7 +45,7 @@ async def update_nhl_matches(session: ClientSession):
 
             visitor_team = await sync_to_async(NHLTeam.objects.get)(name=visitor_team)
             home_team = await sync_to_async(NHLTeam.objects.get)(name=home_team)
-
+            print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
             if await is_game_exist(date_game, visitor_team, home_team):
                 continue
 
@@ -65,7 +67,7 @@ async def is_game_exist(date_game, visitor_team, home_team):
 async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, overtime,
                         game_type):
     await sync_to_async(NHLGame.objects.update_or_create)(
-        date=date_game.strftime('%Y-%m-%d'),
+        date=date_game,
         visitor_team=visitor_team,
         home_team=home_team,
         defaults={
@@ -104,14 +106,14 @@ async def scrape_nhl_box_score_link(session, box_score_link):
         team_totals = i.find('tfoot').find_all('tr')
         for totals in team_totals:
             goals = totals.find('td', {'data-stat': 'goals'}).text
-            assists = totals.find('td', {'data-stat': 'ast'}).text
+            assists = totals.find('td', {'data-stat': 'assists'}).text
             points = totals.find('td', {'data-stat': 'points'}).text
             penalties_in_minutes = totals.find('td', {'data-stat': 'pen_min'}).text
             even_strength_goals = totals.find('td', {'data-stat': 'goals_ev'}).text
             power_play_goals = totals.find('td', {'data-stat': 'goals_pp'}).text
             short_handed_goals = totals.find('td', {'data-stat': 'goals_sh'}).text
             shots_on_goal = totals.find('td', {'data-stat': 'shots'}).text
-            shooting_percentage = totals.find('td', {'data-stat': 'shot_pct'})
+            shooting_percentage = totals.find('td', {'data-stat': 'shot_pct'}).text
             nhl_stats.append({
                 'goals': goals,
                 'assists': assists,
@@ -123,4 +125,5 @@ async def scrape_nhl_box_score_link(session, box_score_link):
                 'shots_on_goal': shots_on_goal,
                 'shooting_percentage': shooting_percentage
             })
+    print(nhl_stats)
     return nhl_stats

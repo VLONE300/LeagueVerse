@@ -1,6 +1,7 @@
 from aiohttp import ClientSession
+from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
-
+from nhl.models import NHLTeam, NHLStanding
 from parsers.fetcher import fetch
 from parsers.utils import extract_team_name
 
@@ -32,3 +33,26 @@ async def scrape_nhl_standings(session: ClientSession, sleep: int = 5, retries: 
             })
 
     return data
+
+
+async def update_nhl_standings(session: ClientSession):
+    standings_data = await scrape_nhl_standings(session)
+    if standings_data is None:
+        return
+
+    for data in standings_data:
+        team = await sync_to_async(NHLTeam.objects.get)(name=data['team_name'])
+        await sync_to_async(NHLStanding.objects.update_or_create)(
+            team=team,
+            defaults={
+                'games_played': data['games_played'],
+                'wins': data['wins'],
+                'losses': data['losses'],
+                'num_of_overtime_losses': data['num_of_overtime_losses'],
+                'total_points': data['total_points'],
+                'points_percentage': data['points_percentage'],
+                'goals_for': data['goals_for'],
+                'goals_against': data['goals_against'],
+                'wins_of_regulation': data['wins_of_regulation'],
+            }
+        )
