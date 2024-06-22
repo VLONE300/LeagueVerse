@@ -1,8 +1,8 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
 from nba.models import NBAStanding, NBATeam, NBAGame
-from nba.serializers import NBATeamsSerializer, NBAStandingsSerializer, NBAGamesSerializer, NBAScheduleSerializer, \
-    NBAGamesDateSerializer
+from nba.serializers import NBATeamsSerializer, NBAStandingsSerializer, NBAScheduleSerializer, \
+    NBAGamesDateSerializer, NBAGameDetailSerializer, NBAGameListSerializer
 
 
 class NBATeamsView(ReadOnlyModelViewSet):
@@ -16,8 +16,12 @@ class NBAStandingsView(StandingsView):
 
 
 class NBAScoreView(GamesView):
-    queryset = NBAGame.objects.filter(status='Finished').order_by('-date')
-    serializer_class = NBAGamesSerializer
+    queryset = NBAGame.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return NBAGameDetailSerializer
+        return NBAGameListSerializer
 
 
 class NBAScheduleView(GamesView):
@@ -28,3 +32,5 @@ class NBAScheduleView(GamesView):
 class NBAGamesDateView(ReadOnlyModelViewSet):
     queryset = NBAGame.objects.all()
     serializer_class = NBAGamesDateSerializer
+
+#  slug = date_str+game.home_team.name.upper()[:3]
