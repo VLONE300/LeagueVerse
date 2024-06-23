@@ -9,4 +9,5 @@ urlpatterns = [
     path('add-favorite-league/<int:league_id>/', AddFavoriteLeagueView.as_view(), name='add_favorite_league'),
     path('favorite-leagues/', AddFavoriteLeagueView.as_view(), name='favorite_leagues'),
     path('add-favorite-team/<str:team_type>/<int:team_id>/', AddFavoriteTeamView.as_view(), name='add_favorite_team'),
+    path('favorite-teams/', AddFavoriteTeamView.as_view(), name='favorite_teams'),
 ]

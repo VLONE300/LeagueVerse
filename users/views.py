@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import League
-from core.serializers import LeagueSerializer
+from core.serializers import LeagueSerializer, FavoriteTeamSerializer
 from nba.models import NBATeam
 from nhl.models import NHLTeam
 from users.models import FavoriteTeam
@@ -66,3 +66,9 @@ class AddFavoriteTeamView(APIView):
         content_type = ContentType.objects.get_for_model(team)
         FavoriteTeam.objects.create(user=user, content_type=content_type, object_id=team.id)
         return Response({'detail': 'Team added to favorites.'}, status=status.HTTP_200_OK)
+
+    def get(self, request):
+        user = request.user
+        favorite_teams = FavoriteTeam.objects.filter(user=user)
+        serializer = FavoriteTeamSerializer(favorite_teams, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

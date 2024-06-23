@@ -54,3 +54,6 @@ class FavoriteTeam(models.Model):
     class Meta:
         verbose_name = "Favorite Team"
         verbose_name_plural = "Favorite Teams"
+
+    def __str__(self):
+        return self.content_object.name
