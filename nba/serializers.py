@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from nba.models import NBAStanding, NBATeam, NBAGame, NBATeamStats, NBABoxScore
 
 
@@ -18,15 +17,15 @@ class NBAStandingsSerializer(serializers.ModelSerializer):
                   'oop_points_percentage_game',)
 
 
-class NBATeamStatsSerializer(serializers.ModelSerializer):
+class NBAGameStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = NBATeamStats
         fields = '__all__'
 
 
 class NBABoxScoreSerializer(serializers.ModelSerializer):
-    home_team_stats = NBATeamStatsSerializer()
-    visitor_team_stats = NBATeamStatsSerializer()
+    visitor_team_stats = NBAGameStatsSerializer()
+    home_team_stats = NBAGameStatsSerializer()
 
     class Meta:
         model = NBABoxScore
@@ -39,7 +38,7 @@ class NBAGameListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NBAGame
-        fields = ('date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts',)
+        fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts',)
 
     def get_visitor_team(self, obj):
         return obj.visitor_team.name
@@ -69,13 +68,9 @@ class NBAGameDetailSerializer(serializers.ModelSerializer):
 class NBAScheduleSerializer(NBAGameListSerializer):
     class Meta:
         model = NBAGame
-        fields = NBAGameListSerializer.Meta.fields + ('time', 'arena')
+        fields = NBAGameListSerializer.Meta.fields + ('time', 'arena', 'type')
 
 
-class NBAGamesDateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NBAGame
-        fields = ('date',)
-
-
-
+class NBATeamStatsSerializer(serializers.Serializer):
+    team = NBATeamsSerializer()
+    avg_points_per_game = serializers.FloatField()
