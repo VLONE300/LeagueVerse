@@ -3,6 +3,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
 from nhl.models import NHLTeam, NHLStanding, NHLGame
 from nhl import serializers
+from nhl.utils import get_nhl_stats
 
 
 class NHLTeamsView(ReadOnlyModelViewSet):
@@ -26,9 +27,18 @@ class NHLScoreView(GamesView):
 
 class NHLScheduleView(GamesView):
     queryset = NHLGame.objects.filter(status='Waiting').order_by('-date')
-    serializer_class = serializers.NBAScheduleSerializer
+    serializer_class = serializers.NHLScheduleSerializer
 
 
 class NHLGamesDateView(ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         return Response([i.date for i in NHLGame.objects.all()])
+
+
+class NHLTeamStatsView(ReadOnlyModelViewSet):
+    serializer_class = serializers.NHLTeamStatsSerializer
+
+    def list(self, request, *args, **kwargs):
+        teams = NHLTeam.objects.all()
+        team_stats = get_nhl_stats(teams)
+        return Response(team_stats)

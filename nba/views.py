@@ -3,7 +3,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
 from nba.models import NBAStanding, NBATeam, NBAGame
 from nba import serializers
-from nba.utils import get_stats
+from nba.utils import get_nba_stats
 
 
 class NBATeamsView(ReadOnlyModelViewSet):
@@ -42,5 +42,5 @@ class NBATeamStatsView(ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         teams = NBATeam.objects.all()
-        team_stats = get_stats(teams)
+        team_stats = get_nba_stats(teams)
         return Response(team_stats)

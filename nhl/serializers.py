@@ -66,7 +66,15 @@ class NHLGameDetailSerializer(serializers.ModelSerializer):
         return obj.home_team.name
 
 
-class NBAScheduleSerializer(NHLGameListSerializer):
+class NHLScheduleSerializer(NHLGameListSerializer):
     class Meta:
         model = NHLGame
         fields = NHLGameListSerializer.Meta.fields + ('time', 'arena', 'type')
+
+
+class NHLTeamStatsSerializer(serializers.Serializer):
+    team = NHLTeamsSerializer()
+    avg_points_per_game = serializers.FloatField()
+
+    def get_team(self, obj):
+        return obj.team.name
