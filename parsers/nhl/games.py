@@ -5,6 +5,8 @@ from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
 
+from core.utils import delete_unrelated_box_scores, delete_unrelated_team_stats, save_box_score, \
+    save_team_stats, is_game_exist
 from nhl.models import NHLTeam, NHLGame, NHLBoxScore, NHLTeamStats
 from parsers.fetcher import fetch
 
@@ -38,34 +40,18 @@ async def update_nhl_matches(session: ClientSession):
             visitor_team = await sync_to_async(NHLTeam.objects.get)(name=visitor_team)
             home_team = await sync_to_async(NHLTeam.objects.get)(name=home_team)
 
-            if await is_game_exist(date_game, visitor_team, home_team):
+            if await is_game_exist(NHLGame, date_game, visitor_team, home_team):
                 break
 
             box_score = None
 
             if box_score_link:
                 stats = await scrape_nhl_box_score_link(session, box_score_link)
-                visitor_team_stats, home_team_stats = await save_nhl_team_stats(stats)
-                box_score = await save_nhl_box_score(visitor_team_stats, home_team_stats)
-
-            print(date_game, visitor_team, visitor_pts, home_team, home_pts, box_score)
+                visitor_team_stats, home_team_stats = await save_team_stats(NHLTeamStats, stats)
+                box_score = await save_box_score(NHLBoxScore, visitor_team_stats, home_team_stats)
 
             await save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
                                 overtime, game_type)
-
-
-async def is_game_exist(date_game, visitor_team, home_team):
-    match_exists = await sync_to_async(
-        NHLGame.objects.filter(
-            date=date_game,
-            visitor_team=visitor_team,
-            visitor_pts__isnull=False,
-            home_team=home_team,
-            home_pts__isnull=False,
-            box_score__isnull=False,
-            status='Finished'
-        ).exists)()
-    return match_exists
 
 
 async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, overtime,
@@ -84,20 +70,8 @@ async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pt
             'type': game_type,
         }
     )
-
-
-async def save_nhl_box_score(visitor_team_stats, home_team_stats):
-    box_score = await sync_to_async(NHLBoxScore.objects.create)(
-        visitor_team_stats=visitor_team_stats,
-        home_team_stats=home_team_stats
-    )
-    return box_score
-
-
-async def save_nhl_team_stats(stats):
-    visitor_team_stats = await sync_to_async(NHLTeamStats.objects.create)(**stats[0])
-    home_team_stats = await sync_to_async(NHLTeamStats.objects.create)(**stats[1])
-    return visitor_team_stats, home_team_stats
+    await delete_unrelated_box_scores(NHLGame, NHLBoxScore)
+    await delete_unrelated_team_stats(NHLBoxScore, NHLTeamStats)
 
 
 async def scrape_nhl_box_score_link(session, box_score_link):
@@ -129,5 +103,4 @@ async def scrape_nhl_box_score_link(session, box_score_link):
                 'shots_on_goal': shots_on_goal,
                 'shooting_percentage': shooting_percentage
             })
-    print(nhl_stats)
     return nhl_stats
