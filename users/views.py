@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import League
-from core.serializers import LeagueSerializer, FavoriteTeamSerializer
+from core.serializers import FavoriteSerializer
 from nba.models import NBATeam
 from nhl.models import NHLTeam
-from users.models import FavoriteTeam
+from users.models import Favorite
 
 
 class ActivateUser(UserViewSet):
@@ -25,50 +25,33 @@ class ActivateUser(UserViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class AddFavoriteLeagueView(APIView):
+class AddFavoriteView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, league_id):
+    def post(self, request, item_type, item_id):
         user = request.user
-        try:
-            league = League.objects.get(id=league_id)
-        except League.DoesNotExist:
-            return Response({'detail': 'League not found.'}, status=status.HTTP_404_NOT_FOUND)
+        model = None
 
-        user.fav_league.add(league)
-        user.save()
-        return Response({'detail': 'League added to favorites.'}, status=status.HTTP_200_OK)
-
-    def get(self, request):
-        user = request.user
-        favorite_leagues = user.fav_league.all()
-        serializer = LeagueSerializer(favorite_leagues, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AddFavoriteTeamView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, team_type, team_id):
-        user = request.user
-        if team_type == 'nba':
+        if item_type == 'nba':
             model = NBATeam
-        elif team_type == 'nhl':
+        elif item_type == 'nhl':
             model = NHLTeam
+        elif item_type == 'league':
+            model = League
         else:
-            return Response({'detail': 'Invalid team type.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Invalid item type.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            team = model.objects.get(id=team_id)
+            item = model.objects.get(id=item_id)
         except model.DoesNotExist:
-            return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Item not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        content_type = ContentType.objects.get_for_model(team)
-        FavoriteTeam.objects.create(user=user, content_type=content_type, object_id=team.id)
-        return Response({'detail': 'Team added to favorites.'}, status=status.HTTP_200_OK)
+        content_type = ContentType.objects.get_for_model(item)
+        Favorite.objects.create(user=user, content_type=content_type, object_id=item.id)
+        return Response({'detail': 'Item added to favorites.'}, status=status.HTTP_200_OK)
 
     def get(self, request):
         user = request.user
-        favorite_teams = FavoriteTeam.objects.filter(user=user)
-        serializer = FavoriteTeamSerializer(favorite_teams, many=True)
+        favorites = Favorite.objects.filter(user=user)
+        serializer = FavoriteSerializer(favorites, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
