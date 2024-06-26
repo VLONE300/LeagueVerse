@@ -12,19 +12,19 @@ app.autodiscover_tasks(['parsers.nba.tasks', 'parsers.nhl.tasks'])
 app.conf.beat_schedule = {
     'save-nba-standings-every-five-minutes': {
         'task': 'parsers.nba.tasks.save_nba_standings',
-        'schedule': crontab(minute='*/5'),  # Запускать каждые 5 минут
+        'schedule': crontab(hour='*/2'),
     },
     'save-nhl-standings-every-five-minutes': {
         'task': 'parsers.nhl.tasks.save_nhl_standings',
-        'schedule': crontab(minute='*/5'),  # Запускать каждые 5 минут
+        'schedule': crontab(minute='*/2'),
     },
 
     'parse-nba-games-every-hour': {
         'task': 'parsers.nba.tasks.parse_nba_games',
-        'schedule': crontab(minute='*/5'),  # Каждый час
+        'schedule': crontab(minute='*/2'),
     },
     'parse-nhl-games-every-hour': {
         'task': 'parsers.nhl.tasks.parse_nhl_games',
-        'schedule': crontab(minute='*/5'),  # Каждый час
+        'schedule': crontab(minute='*/2'),
     },
 }
