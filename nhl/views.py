@@ -13,7 +13,7 @@ class NHLTeamsView(ReadOnlyModelViewSet):
 
 class NHLStandingsView(StandingsView):
     serializer_class = serializers.NHLStandingsSerializer
-    queryset = NHLStanding.objects.all()
+    queryset = NHLStanding.objects.all().order_by('-wins')
 
 
 class NHLScoreView(GamesView):

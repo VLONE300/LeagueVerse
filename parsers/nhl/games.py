@@ -53,6 +53,9 @@ async def update_nhl_matches(session: ClientSession):
             await save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
                                 overtime, game_type)
 
+            # await delete_unrelated_box_scores(NHLGame, NHLBoxScore)
+            # await delete_unrelated_team_stats(NHLBoxScore, NHLTeamStats)
+
 
 async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, overtime,
                         game_type):
@@ -70,8 +73,6 @@ async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pt
             'type': game_type,
         }
     )
-    await delete_unrelated_box_scores(NHLGame, NHLBoxScore)
-    await delete_unrelated_team_stats(NHLBoxScore, NHLTeamStats)
 
 
 async def scrape_nhl_box_score_link(session, box_score_link):
