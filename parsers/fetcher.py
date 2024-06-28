@@ -7,7 +7,7 @@ user = fake_useragent.UserAgent().random
 header = {'user-agent': user}
 
 
-async def fetch(session: ClientSession, url: str, sleep: int = 7, retries: int = 4):
+async def fetch(session: ClientSession, url: str, sleep: int = 10, retries: int = 4):
     for i in range(1, retries + 1):
         await asyncio.sleep(sleep * i)
         try:
