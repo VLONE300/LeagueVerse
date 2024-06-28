@@ -26,7 +26,7 @@ class NBAScoreView(GamesView):
 
 
 class NBAScheduleView(GamesView):
-    queryset = NBAGame.objects.all().order_by('-date')
+    queryset = NBAGame.objects.filter(status='Waiting').order_by('-date')
     serializer_class = serializers.NBAScheduleSerializer
 
 

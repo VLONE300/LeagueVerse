@@ -44,12 +44,16 @@ def team_3fg(teams):
     for team in teams:
         visitor_games = get_games(NBAGame, team, is_home=False)
         home_games = get_games(NBAGame, team, is_home=True)
-
-        visitor_three_pointers = visitor_games.aggregate(
-            total=Sum('box_score__visitor_team_stats__three_point_field_goals'))['total']
-        home_three_pointers = home_games.aggregate(
-            total=Sum('box_score__home_team_stats__three_point_field_goals'))['total']
-
+        if visitor_games:
+            visitor_three_pointers = visitor_games.aggregate(
+                total=Sum('box_score__visitor_team_stats__three_point_field_goals'))['total']
+        else:
+            visitor_three_pointers = 0
+        if home_games:
+            home_three_pointers = home_games.aggregate(
+                total=Sum('box_score__home_team_stats__three_point_field_goals'))['total']
+        else:
+            home_three_pointers = 0
         total_three_pointers = visitor_three_pointers + home_three_pointers
 
         team_3fg_data.append({

@@ -15,11 +15,16 @@ def team_ppg(teams):
         visitor_games = get_games(NHLGame, team, is_home=False)
         home_games = get_games(NHLGame, team, is_home=True)
 
-        visitor_power_play_goals = visitor_games.aggregate(
-            total=Sum('box_score__visitor_team_stats__power_play_goals'))['total']
-        home_power_play_goals = home_games.aggregate(
-            total=Sum('box_score__home_team_stats__power_play_goals'))['total']
-
+        if visitor_games:
+            visitor_power_play_goals = visitor_games.aggregate(
+                total=Sum('box_score__visitor_team_stats__power_play_goals'))['total']
+        else:
+            visitor_power_play_goals = 0
+        if home_games:
+            home_power_play_goals = home_games.aggregate(
+                total=Sum('box_score__home_team_stats__power_play_goals'))['total']
+        else:
+            home_power_play_goals = 0
         total_power_play_goals = visitor_power_play_goals + home_power_play_goals
 
         team_ppp_data.append({
@@ -36,11 +41,16 @@ def team_pim(teams):
         visitor_games = get_games(NHLGame, team, is_home=False)
         home_games = get_games(NHLGame, team, is_home=True)
 
-        visitor_penalties_in_minutes = visitor_games.aggregate(
-            total=Sum('box_score__visitor_team_stats__penalties_in_minutes'))['total']
-        home_penalties_in_minutes = home_games.aggregate(
-            total=Sum('box_score__home_team_stats__penalties_in_minutes'))['total']
-
+        if visitor_games:
+            visitor_penalties_in_minutes = visitor_games.aggregate(
+                total=Sum('box_score__visitor_team_stats__penalties_in_minutes'))['total']
+        else:
+            visitor_penalties_in_minutes = 0
+        if home_games:
+            home_penalties_in_minutes = home_games.aggregate(
+                total=Sum('box_score__home_team_stats__penalties_in_minutes'))['total']
+        else:
+            home_penalties_in_minutes = 0
         total_penalties_in_minutes = visitor_penalties_in_minutes + home_penalties_in_minutes
 
         team_pim_data.append({
@@ -69,11 +79,16 @@ def team_shg(teams):
         visitor_games = get_games(NHLGame, team, is_home=False)
         home_games = get_games(NHLGame, team, is_home=True)
 
-        visitor_short_handed_goals = visitor_games.aggregate(
-            total=Sum('box_score__visitor_team_stats__short_handed_goals'))['total']
-        home_short_handed_goals = home_games.aggregate(
-            total=Sum('box_score__home_team_stats__short_handed_goals'))['total']
-
+        if visitor_games:
+            visitor_short_handed_goals = visitor_games.aggregate(
+                total=Sum('box_score__visitor_team_stats__short_handed_goals'))['total']
+        else:
+            visitor_short_handed_goals = 0
+        if home_games:
+            home_short_handed_goals = home_games.aggregate(
+                total=Sum('box_score__home_team_stats__short_handed_goals'))['total']
+        else:
+            home_short_handed_goals = 0
         total_short_handed_goals = visitor_short_handed_goals + home_short_handed_goals
 
         team_shg_data.append({

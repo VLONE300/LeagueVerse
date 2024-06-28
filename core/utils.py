@@ -14,10 +14,15 @@ def calculate_stat(model, teams, visitor_stat, home_stat, multiplier=1):
     for team in teams:
         visitor_games = get_games(model, team, is_home=False)
         home_games = get_games(model, team, is_home=True)
-
-        visitor_value = visitor_games.aggregate(avg_value=Avg(visitor_stat))['avg_value']
-        home_value = home_games.aggregate(avg_value=Avg(home_stat))['avg_value']
-
+        if visitor_games:
+            visitor_value = visitor_games.aggregate(avg_value=Avg(visitor_stat))['avg_value']
+        else:
+            visitor_value = 0
+        if home_games:
+            home_value = home_games.aggregate(avg_value=Avg(home_stat))['avg_value']
+        else:
+            home_value = 0
+        print(team, visitor_games, home_games, visitor_value, home_value)
         avg_stat = ((visitor_value + home_value) / 2) * multiplier
 
         stat_data.append({
