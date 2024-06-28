@@ -22,7 +22,6 @@ def calculate_stat(model, teams, visitor_stat, home_stat, multiplier=1):
             home_value = home_games.aggregate(avg_value=Avg(home_stat))['avg_value']
         else:
             home_value = 0
-        print(team, visitor_games, home_games, visitor_value, home_value)
         avg_stat = ((visitor_value + home_value) / 2) * multiplier
 
         stat_data.append({

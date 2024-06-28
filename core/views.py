@@ -9,6 +9,7 @@ from core.serializers import LeagueSerializer
 class LeagueView(ReadOnlyModelViewSet):
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
+    lookup_field = 'name'
 
 
 class StandingsView(ReadOnlyModelViewSet):
