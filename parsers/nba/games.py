@@ -71,6 +71,9 @@ async def update_nba_matches(session: ClientSession, season: int):
             await save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time,
                                 arena)
 
+            # await delete_unrelated_box_scores(NBAGame, NBABoxScore)
+            # await delete_unrelated_team_stats(NBABoxScore, NBATeamStats)
+
 
 async def save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, arena):
     playoff_cutoff = date(2024, 4, 20)
@@ -90,8 +93,6 @@ async def save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pt
             'type': game_type
         }
     )
-    await delete_unrelated_box_scores(NBAGame, NBABoxScore)
-    await delete_unrelated_team_stats(NBABoxScore, NBATeamStats)
 
 
 async def scrape_nba_box_score_link(session: ClientSession, box_score_link: str):

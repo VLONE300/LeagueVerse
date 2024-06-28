@@ -12,7 +12,7 @@ class NBATeamsView(ReadOnlyModelViewSet):
 
 
 class NBAStandingsView(StandingsView):
-    queryset = NBAStanding.objects.all()
+    queryset = NBAStanding.objects.all().order_by('-winning_percentage')
     serializer_class = serializers.NBAStandingsSerializer
 
 
