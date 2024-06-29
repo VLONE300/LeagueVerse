@@ -1,9 +1,11 @@
+import asyncio
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
 from nba.models import NBAStanding, NBATeam, NBAGame
 from nba import serializers
 from nba.utils import get_nba_stats
+from parsers.nba.utils import get_nba_matches
 
 
 class NBATeamsView(ReadOnlyModelViewSet):

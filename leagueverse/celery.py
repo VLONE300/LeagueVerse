@@ -10,21 +10,21 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(['core.tasks'])
 
 app.conf.beat_schedule = {
-    'save-nba-standings-every-five-minutes': {
-        'task': 'parsers.nba.tasks.save_nba_standings',
-        'schedule': crontab(hour='*/2'),
+    'save-nba-standings-every-two-hours': {
+        'task': 'core.tasks.save_nba_standings',
+        'schedule': crontab(minute='*/2'),
     },
-    'save-nhl-standings-every-five-minutes': {
-        'task': 'parsers.nhl.tasks.save_nhl_standings',
-        'schedule': crontab(hour='*/2'),
+    'save-nhl-standings-every-two-hours': {
+        'task': 'core.tasks.save_nhl_standings',
+        'schedule': crontab(minute='*/2'),
     },
 
-    'parse-nba-games-every-hour': {
-        'task': 'parsers.nba.tasks.parse_nba_games',
-        'schedule': crontab(hour='*/2'),
+    'parse-nba-games-every-two-hours': {
+        'task': 'core.tasks.parse_nba_games',
+        'schedule': crontab(minute="10", hour='*/2'),
     },
-    'parse-nhl-games-every-hour': {
-        'task': 'parsers.nhl.tasks.parse_nhl_games',
-        'schedule': crontab(hour='*/2'),
-    },
+    # 'parse-nhl-games-every-two-hours': {
+    #     'task': 'core.tasks.parse_nhl_games',
+    #     'schedule': crontab(minute="0", hour='*/2'),
+    # },
 }

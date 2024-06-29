@@ -1,5 +1,6 @@
 from django.db import models
 from core.models import Team, ConferenceStanding, Game
+from core.utils import nba_slug_team_name
 
 
 class NBATeam(Team):
@@ -25,6 +26,17 @@ class NBAGame(Game):
     visitor_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name="visitor_team")
     home_team = models.ForeignKey("NBATeam", on_delete=models.CASCADE, related_name="home_team")
     box_score = models.ForeignKey("NBABoxScore", on_delete=models.CASCADE, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        date_part = str(self.date).replace('-', '')
+
+        if self.visitor_team.name in nba_slug_team_name:
+            visitor_team_slug = nba_slug_team_name[self.visitor_team.name]
+            self.slug = f"{date_part}-{visitor_team_slug}"
+        else:
+            raise ValueError(f"Unknown NBA team name: {self.visitor_team.name}")
+
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "NBA Game"

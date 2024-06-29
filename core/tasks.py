@@ -14,10 +14,10 @@ def save_nba_standings():
     asyncio.run(get_nba_standings())
 
 
-@shared_task
-def parse_nhl_games():
-    import asyncio
-    asyncio.run(get_nhl_matches())
+# @shared_task
+# def parse_nhl_games():
+#     import asyncio
+#     asyncio.run(get_nhl_matches())
 
 
 @shared_task
