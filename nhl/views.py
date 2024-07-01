@@ -19,6 +19,7 @@ class NHLStandingsView(StandingsView):
 class NHLScoreView(GamesView):
     queryset = NHLGame.objects.all().order_by('-date')
     lookup_field = 'slug'
+
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return serializers.NHLGameDetailSerializer
@@ -26,9 +27,10 @@ class NHLScoreView(GamesView):
 
 
 class NHLScheduleView(GamesView):
-    queryset = NHLGame.objects.filter(status='Waiting').order_by('-date')
+    queryset = NHLGame.objects.filter(status='Waiting').order_by('date')[:3]
     serializer_class = serializers.NHLScheduleSerializer
     lookup_field = 'slug'
+
 
 class NHLGamesDateView(ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
