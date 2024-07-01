@@ -20,6 +20,7 @@ class NBAStandingsView(StandingsView):
 
 class NBAScoreView(GamesView):
     queryset = NBAGame.objects.all().order_by('-date')
+    lookup_field = 'slug'
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -30,6 +31,7 @@ class NBAScoreView(GamesView):
 class NBAScheduleView(GamesView):
     queryset = NBAGame.objects.filter(status='Waiting').order_by('-date')
     serializer_class = serializers.NBAScheduleSerializer
+    lookup_field = 'slug'
 
 
 class NBAGamesDateView(ReadOnlyModelViewSet):

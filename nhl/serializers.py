@@ -6,7 +6,7 @@ from nhl.models import NHLStanding, NHLTeam, NHLGame, NHLTeamStats, NHLBoxScore
 class NHLTeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = NHLTeam
-        fields = ('id', 'name', 'conference', 'division', 'team_logo')
+        fields = ('id', 'name', 'conference', 'division', 'team_logo', 'slug')
 
 
 class NHLStandingsSerializer(serializers.ModelSerializer):

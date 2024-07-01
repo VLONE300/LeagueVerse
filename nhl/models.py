@@ -33,7 +33,7 @@ class NHLGame(Game):
 
         if self.visitor_team.name in nhl_slug_team_name:
             visitor_team_slug = nhl_slug_team_name[self.visitor_team.name]
-            self.slug = f"{date_part}-{visitor_team_slug}"
+            self.slug = f"{date_part}{visitor_team_slug}"
         else:
             raise ValueError(f"Unknown NHL team name: {self.visitor_team.name}")
 
