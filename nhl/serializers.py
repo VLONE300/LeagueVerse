@@ -6,7 +6,7 @@ from nhl.models import NHLStanding, NHLTeam, NHLGame, NHLTeamStats, NHLBoxScore
 class NHLTeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = NHLTeam
-        fields = ('id', 'name', 'conference', 'division', 'team_logo', 'slug')
+        fields = ('id', 'name', 'conference', 'division', 'team_logo')
 
 
 class NHLStandingsSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class NHLGameListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NHLGame
-        fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts',)
+        fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'slug')
 
     def get_visitor_team(self, obj):
         return obj.visitor_team.name

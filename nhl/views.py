@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
@@ -27,9 +28,15 @@ class NHLScoreView(GamesView):
 
 
 class NHLScheduleView(GamesView):
-    queryset = NHLGame.objects.filter(status='Waiting').order_by('date')[:3]
     serializer_class = serializers.NHLScheduleSerializer
     lookup_field = 'slug'
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        unique_dates = NHLGame.objects.filter(status='Waiting', date__gte=today).values_list(
+            'date', flat=True).distinct().order_by('date')[:3]
+        print(unique_dates)
+        return NHLGame.objects.filter(status='Waiting', date__in=unique_dates).order_by('date', 'time')
 
 
 class NHLGamesDateView(ReadOnlyModelViewSet):
