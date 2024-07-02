@@ -40,7 +40,7 @@ class NBAScheduleView(GamesView):
 
 class NBAGamesDateView(ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
-        return Response([i.date for i in NBAGame.objects.all()])
+        return Response([i.date for i in NBAGame.objects.all().order_by('-date')])
 
 
 class NBATeamStatsView(ReadOnlyModelViewSet):

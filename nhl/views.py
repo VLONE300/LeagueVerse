@@ -35,13 +35,12 @@ class NHLScheduleView(GamesView):
         today = timezone.now().date()
         unique_dates = NHLGame.objects.filter(status='Waiting', date__gte=today).values_list(
             'date', flat=True).distinct().order_by('date')[:3]
-        print(unique_dates)
         return NHLGame.objects.filter(status='Waiting', date__in=unique_dates).order_by('date', 'time')
 
 
 class NHLGamesDateView(ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
-        return Response([i.date for i in NHLGame.objects.all()])
+        return Response([i.date for i in NHLGame.objects.all().order_by('-date')])
 
 
 class NHLTeamStatsView(ReadOnlyModelViewSet):
