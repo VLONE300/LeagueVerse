@@ -25,6 +25,8 @@ services:
       POSTGRES_PASSWORD: pass
     ports:
       - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
 
   app:
@@ -78,12 +80,14 @@ services:
   celery-beat:
     build:
       context: .
-    command:  sh -c "sleep 10 && celery -A leagueverse beat -l info"
+    command: sh -c "sleep 10 && celery -A leagueverse beat -l info"
     depends_on:
       - celery
       - redis
       - postgres
     environment:
       <<: *environment-defaults
+
 volumes:
+  pg_data:
   static_volume:
