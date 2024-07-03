@@ -1,2 +1,10 @@
 .env
 celerybeat_schedule
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.swp
+venv
+.git
+.gitignore

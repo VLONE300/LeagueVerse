@@ -1,10 +1,24 @@
-version: '3'
+version: '3.8'
+x-environment-defaults: &environment-defaults
+  SECRET_KEY: "django-insecure-l6watn11%n7hx8c(ih95)(k0f_-q-b1a0bryu9^m85xq0&w^ct"
+  DEBUG: "False"
+  POSTGRES_DB: "league_verse"
+  POSTGRES_USER: "vlone"
+  POSTGRES_PASSWORD: "pass"
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: 5432
+  REDIS_HOST: "redis"
+  REDIS_PORT: 6379
+  EMAIL_HOST_PASSWORD: "dsywvegnvqkudzxz"
+  EMAIL_HOST_USER: "ermolich158@gmail.com"
+  TELEGRAM_API_KEY: "7234316894:AAHEqUL532i5kzacjeMV1rnomwjURcdan-0"
+  DJANGO_SUPERUSER_PASSWORD: "smurfeta228"
+  DJANGO_SUPERUSER_EMAIL: "ermolich01@mail.ru"
 
 services:
-  db:
+  postgres:
     image: postgres:latest
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+    container_name: postgres
     environment:
       POSTGRES_DB: league_verse
       POSTGRES_USER: vlone
@@ -12,72 +26,64 @@ services:
     ports:
       - "5433:5432"
 
+
   app:
     build:
-      context: ./LeagueVerse
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8001:8000"
     depends_on:
-      - db
+      - postgres
+    container_name: league_verse_app
     environment:
-      DEBUG: "False"
+      <<: *environment-defaults
+    volumes:
+      - static_volume:/app/static/
+    restart: on-failure:5
+    healthcheck:
+      test: curl -f http://localhost:8000/api/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./conf/nginx.conf:/ets/nginx/nginx.conf
+      - static_volume:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - app
 
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6381:6379"
 
-#  version: '3'
-#
-#  services:
-#    web:
-#      build: .
-#      command: >
-#        sh -c "
-#        python manage.py migrate &&
-#        gunicorn leagueverse.wsgi:application --bind 0.0.0.0:8000
-#        "
-#      volumes:
-#        - .:/app
-#      ports:
-#        - "8001:8000"
-#      env_file:
-#        - .env
-#      depends_on:
-#        - db
-#        - redis
-#
-#    db:
-#      image: postgres:13
-#      volumes:
-#        - postgres_data:/var/lib/postgresql/data/
-#      environment:
-#        POSTGRES_DB: league_verse
-#        POSTGRES_USER: vlone
-#        POSTGRES_PASSWORD: pass
-#
-#    redis:
-#      image: redis:6
-#      ports:
-#        - "6381:6379"
-#
-#    celery:
-#      build: .
-#      command: celery -A leagueverse worker --loglevel=info
-#      volumes:
-#        - .:/app
-#      env_file:
-#        - .env
-#      depends_on:
-#        - db
-#        - redis
-#
-#    celery-beat:
-#      build: .
-#      command: celery -A leagueverse beat --loglevel=info
-#      volumes:
-#        - .:/app
-#      env_file:
-#        - .env
-#      depends_on:
-#        - db
-#        - redis
-#  volumes:
-#    postgres_data:
+  celery:
+    build:
+      context: .
+    command: sh -c "sleep 10 && celery -A leagueverse worker -l info"
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      <<: *environment-defaults
+
+
+  celery-beat:
+    build:
+      context: .
+    command:  sh -c "sleep 10 && celery -A leagueverse beat -l info"
+    depends_on:
+      - celery
+      - redis
+      - postgres
+    environment:
+      <<: *environment-defaults
+volumes:
+  static_volume:

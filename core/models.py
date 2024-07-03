@@ -51,7 +51,7 @@ class Game(models.Model):
     status = models.CharField(choices=STATUS_GAME, max_length=10)
     arena = models.CharField(max_length=100, blank=True)
     type = models.CharField(max_length=100, blank=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     class Meta:
         abstract = True

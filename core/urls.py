@@ -3,13 +3,13 @@ from django.conf.urls.static import static
 from django.urls import path
 from rest_framework import routers
 
-from core.views import LeagueView
+from core.views import LeagueView, health
 
 router = routers.SimpleRouter()
 router.register(r'', LeagueView)
 
 urlpatterns = [
-
+    path('health/', health, name='health'),
 ]
 
 urlpatterns += router.urls

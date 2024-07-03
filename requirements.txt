@@ -34,6 +34,7 @@ djoser==2.2.2
 fake-useragent==1.5.1
 flower==2.0.1
 frozenlist==1.4.1
+gunicorn==22.0.0
 humanize==4.9.0
 idna==3.7
 kombu==5.3.7
@@ -41,6 +42,7 @@ lxml==5.2.2
 magic-filter==1.0.12
 multidict==6.0.5
 oauthlib==3.2.2
+packaging==24.1
 pillow==10.3.0
 prometheus_client==0.20.0
 prompt-toolkit==3.0.43
