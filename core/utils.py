@@ -47,6 +47,7 @@ def delete_unrelated_team_stats(box_score, team_stats):
 
 
 async def save_box_score(box_score, visitor_team_stats, home_team_stats):
+    """Saves box score to database"""
     box_score = await sync_to_async(box_score.objects.create)(
         visitor_team_stats=visitor_team_stats,
         home_team_stats=home_team_stats
@@ -55,12 +56,14 @@ async def save_box_score(box_score, visitor_team_stats, home_team_stats):
 
 
 async def save_team_stats(team_stats, stats):
+    """Save team statistics to database"""
     visitor_team_stats = await sync_to_async(team_stats.objects.create)(**stats[0])
     home_team_stats = await sync_to_async(team_stats.objects.create)(**stats[1])
     return visitor_team_stats, home_team_stats
 
 
 async def is_game_exist(game, date_game, visitor_team, home_team):
+    """Check if game exists"""
     match_exists = await sync_to_async(
         game.objects.filter(
             date=date_game,
