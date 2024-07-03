@@ -1,33 +1,15 @@
 version: '3.8'
-x-environment-defaults: &environment-defaults
-  SECRET_KEY: "django-insecure-l6watn11%n7hx8c(ih95)(k0f_-q-b1a0bryu9^m85xq0&w^ct"
-  DEBUG: "False"
-  POSTGRES_DB: "league_verse"
-  POSTGRES_USER: "vlone"
-  POSTGRES_PASSWORD: "pass"
-  POSTGRES_HOST: "postgres"
-  POSTGRES_PORT: 5432
-  REDIS_HOST: "redis"
-  REDIS_PORT: 6379
-  EMAIL_HOST_PASSWORD: "dsywvegnvqkudzxz"
-  EMAIL_HOST_USER: "ermolich158@gmail.com"
-  TELEGRAM_API_KEY: "7234316894:AAHEqUL532i5kzacjeMV1rnomwjURcdan-0"
-  DJANGO_SUPERUSER_PASSWORD: "smurfeta228"
-  DJANGO_SUPERUSER_EMAIL: "ermolich01@mail.ru"
 
 services:
   postgres:
     image: postgres:latest
     container_name: postgres
     environment:
-      POSTGRES_DB: league_verse
-      POSTGRES_USER: vlone
-      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-
 
   app:
     build:
@@ -39,7 +21,20 @@ services:
       - postgres
     container_name: league_verse_app
     environment:
-      <<: *environment-defaults
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
     volumes:
       - static_volume:/app/static/
     restart: on-failure:5
@@ -60,7 +55,6 @@ services:
     depends_on:
       - app
 
-
   redis:
     image: redis:latest
     ports:
@@ -74,8 +68,20 @@ services:
       - redis
       - postgres
     environment:
-      <<: *environment-defaults
-
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
 
   celery-beat:
     build:
@@ -86,7 +92,20 @@ services:
       - redis
       - postgres
     environment:
-      <<: *environment-defaults
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
 
 volumes:
   pg_data:
