@@ -4,6 +4,7 @@ from datetime import datetime
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
+from django.conf import settings
 
 from core.utils import delete_unrelated_box_scores, delete_unrelated_team_stats, save_box_score, \
     save_team_stats, is_game_exist
@@ -12,7 +13,7 @@ from parsers.fetcher import fetch
 
 
 async def update_nhl_matches(session: ClientSession):
-    season_url = 'https://www.hockey-reference.com/leagues/NHL_2024_games.html'
+    season_url = f'{settings.HOCKEY_URL}/leagues/NHL_2024_games.html'
     games_data = await fetch(session, season_url)
     if not games_data:
         return None
@@ -76,7 +77,7 @@ async def save_nhl_game(date_game, visitor_team, home_team, visitor_pts, home_pt
 
 
 async def scrape_nhl_box_score_link(session, box_score_link):
-    full_url = f'https://www.hockey-reference.com{box_score_link}'
+    full_url = f'{settings.HOCKEY_URL}{box_score_link}'
     response = await fetch(session, full_url)
     soup = BeautifulSoup(response, 'lxml')
     tables = soup.find_all('table', id=re.compile(r'[A-Z]{3}_skaters'))

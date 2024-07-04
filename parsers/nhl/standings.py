@@ -1,13 +1,15 @@
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
+from django.conf import settings
+
 from nhl.models import NHLTeam, NHLStanding
 from parsers.fetcher import fetch
 from parsers.utils import extract_team_name
 
 
 async def scrape_nhl_standings(session: ClientSession, sleep: int = 5, retries: int = 3):
-    nhl_standings_url = 'https://www.hockey-reference.com/leagues/NHL_2024_standings.html'
+    nhl_standings_url = f'{settings.HOCKEY_URL}/leagues/NHL_2024_standings.html'
     standings_data = await fetch(session, nhl_standings_url, sleep=sleep, retries=retries)
     if standings_data is None:
         return None

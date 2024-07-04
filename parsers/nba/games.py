@@ -3,6 +3,8 @@ from datetime import date
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
+from django.conf import settings
+
 from core.utils import save_team_stats, save_box_score, delete_unrelated_box_scores, \
     delete_unrelated_team_stats, is_game_exist
 from nba.models import NBATeam, NBATeamStats, NBABoxScore, NBAGame
@@ -11,7 +13,7 @@ from parsers.utils import date_str_to_date
 
 
 async def scrape_season(session: ClientSession, season: int) -> list:
-    season_url = f'https://www.basketball-reference.com/leagues/NBA_{season}_games.html'
+    season_url = f'{settings.BASKETBALL_URL}/leagues/NBA_{season}_games.html'
     response = await fetch(session, season_url)
 
     if response is None:
@@ -21,7 +23,7 @@ async def scrape_season(session: ClientSession, season: int) -> list:
     block = soup.find('div', class_='filter')
     links = block.find_all('a')
     href = [link['href'] for link in links]
-    standings_pages = [f'https://www.basketball-reference.com{link}' for link in href]
+    standings_pages = [f'{settings.BASKETBALL_URL}{link}' for link in href]
 
     return standings_pages[::-1]
 
@@ -96,7 +98,7 @@ async def save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pt
 
 
 async def scrape_nba_box_score_link(session: ClientSession, box_score_link: str):
-    full_url = f'https://www.basketball-reference.com{box_score_link}'
+    full_url = f'{settings.BASKETBALL_URL}{box_score_link}'
     response = await fetch(session, full_url)
     soup = BeautifulSoup(response, 'lxml')
     tables = soup.find_all('table', id=re.compile(r'box-[A-Z]{3}-game-basic'))
