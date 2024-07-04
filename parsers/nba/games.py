@@ -124,13 +124,17 @@ async def scrape_nba_box_score_link(session: ClientSession, box_score_link: str)
             stats.append({
                 'field_goals': field_goals,
                 'field_goal_attempts': field_goal_attempts,
-                'field_goals_percentage': field_goals_percentage,
+                'field_goals_percentage':
+                    float(field_goals_percentage) * 100 if field_goals_percentage else field_goals_percentage,
                 'three_point_field_goals': three_point_field_goals,
                 'three_point_field_goal_attempts': three_point_field_goal_attempts,
-                'three_point_field_goals_percentage': three_point_field_goals_percentage,
+                'three_point_field_goals_percentage':
+                    float(three_point_field_goals_percentage) * 100 if three_point_field_goals_percentage
+                    else three_point_field_goals_percentage,
                 'free_throws': free_throws,
                 'free_throw_attempts': free_throw_attempts,
-                'free_throw_percentage': free_throw_percentage,
+                'free_throw_percentage':
+                    float(free_throw_percentage) * 100 if free_throw_percentage else free_throw_percentage,
                 'personal_fouls': personal_fouls,
                 'total_rebounds': total_rebounds,
                 'offensive_rebounds': offensive_rebounds,
