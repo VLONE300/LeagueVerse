@@ -8,8 +8,8 @@ from parsers.fetcher import fetch
 from parsers.utils import extract_team_name
 
 
-async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: int = 3):
-    nba_standings_url = f'{settings.BASKETBALL_URL}/leagues/NBA_2024_standings.html'
+async def scrape_nba_standings(session: ClientSession, season, sleep: int = 5, retries: int = 3):
+    nba_standings_url = f'{settings.BASKETBALL_URL}/leagues/NBA_{season}_standings.html'
     standings_data = await fetch(session, nba_standings_url, sleep=sleep, retries=retries)
     if standings_data is None:
         return None
@@ -33,8 +33,8 @@ async def scrape_nba_standings(session: ClientSession, sleep: int = 5, retries: 
     return data
 
 
-async def update_nba_standings(session: ClientSession):
-    standings_data = await scrape_nba_standings(session)
+async def update_nba_standings(session: ClientSession,season):
+    standings_data = await scrape_nba_standings(session,season)
     if standings_data is None:
         return
 

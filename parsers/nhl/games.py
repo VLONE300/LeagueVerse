@@ -12,8 +12,8 @@ from nhl.models import NHLTeam, NHLGame, NHLBoxScore, NHLTeamStats
 from parsers.fetcher import fetch
 
 
-async def update_nhl_matches(session: ClientSession):
-    season_url = f'{settings.HOCKEY_URL}/leagues/NHL_2024_games.html'
+async def update_nhl_matches(session: ClientSession, season):
+    season_url = f'{settings.HOCKEY_URL}/leagues/NHL_{season}_games.html'
     games_data = await fetch(session, season_url)
     if not games_data:
         return None
