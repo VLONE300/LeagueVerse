@@ -9,7 +9,7 @@ from nba.utils import get_nba_stats
 
 class NBATeamsView(ReadOnlyModelViewSet):
     queryset = NBATeam.objects.all()
-    serializer_class = serializers.NBATeamsSerializer
+    serializer_class = serializers.NBATeamSerializer
 
 
 class NBAStandingsView(StandingsView):

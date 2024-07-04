@@ -2,14 +2,14 @@ from rest_framework import serializers
 from nba.models import NBAStanding, NBATeam, NBAGame, NBATeamStats, NBABoxScore
 
 
-class NBATeamsSerializer(serializers.ModelSerializer):
+class NBATeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = NBATeam
         fields = ('id', 'name', 'conference', 'division', 'team_logo')
 
 
 class NBAStandingsSerializer(serializers.ModelSerializer):
-    team = NBATeamsSerializer()
+    team = NBATeamSerializer()
 
     class Meta:
         model = NBAStanding
@@ -33,8 +33,8 @@ class NBABoxScoreSerializer(serializers.ModelSerializer):
 
 
 class NBAGameListSerializer(serializers.ModelSerializer):
-    visitor_team = NBATeamsSerializer()
-    home_team = NBATeamsSerializer()
+    visitor_team = NBATeamSerializer()
+    home_team = NBATeamSerializer()
 
     class Meta:
         model = NBAGame
@@ -49,8 +49,8 @@ class NBAGameListSerializer(serializers.ModelSerializer):
 
 class NBAGameDetailSerializer(serializers.ModelSerializer):
     box_score = NBABoxScoreSerializer()
-    visitor_team = NBATeamsSerializer()
-    home_team = NBATeamsSerializer()
+    visitor_team = NBATeamSerializer()
+    home_team = NBATeamSerializer()
 
     class Meta:
         model = NBAGame
@@ -72,5 +72,5 @@ class NBAScheduleSerializer(NBAGameListSerializer):
 
 
 class NBATeamStatsSerializer(serializers.Serializer):
-    team = NBATeamsSerializer()
+    team = NBATeamSerializer()
     avg_points_per_game = serializers.FloatField()
