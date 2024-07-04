@@ -2,7 +2,10 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y wait-for-it && apt-get install -y curl && apt-get clean
+RUN apt-get update \
+    && apt-get install -y wait-for-it curl \
+    && apt-get clean \
+    && pip install --no-cache-dir --upgrade pip
 
 COPY . /app/
 
