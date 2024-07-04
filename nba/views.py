@@ -1,4 +1,3 @@
-from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from core.views import StandingsView, GamesView
@@ -31,26 +30,12 @@ class NBAScheduleView(GamesView):
     lookup_field = 'slug'
 
     def list(self, request, *args, **kwargs):
-        today = timezone.now().date()
-
-        unique_dates = NBAGame.objects.filter(status='Waiting', date__gte=today).values_list(
-            'date', flat=True).distinct().order_by('date')[:3]
-
-        date_games = []
-        for date in unique_dates:
-            games = NBAGame.objects.filter(status='Waiting', date=date).order_by('date', 'time')
-            date_games.append({
-                'date': date,
-                'games': games
-            })
-
-        serializer = serializers.DateGamesSerializer(date_games, many=True)
-        return Response(serializer.data)
+        return self.list_schedule(NBAGame, serializers.DateGamesSerializer)
 
 
-class NBAGamesDateView(ReadOnlyModelViewSet):
+class NBAGamesDateView(GamesView):
     def list(self, request, *args, **kwargs):
-        return Response([i.date for i in NBAGame.objects.all().order_by('-date')])
+        return self.list_game_dates(NBAGame)
 
 
 class NBATeamStatsView(ReadOnlyModelViewSet):
