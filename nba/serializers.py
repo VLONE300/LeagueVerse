@@ -71,6 +71,11 @@ class NBAScheduleSerializer(NBAGameListSerializer):
         fields = NBAGameListSerializer.Meta.fields + ('time', 'arena', 'type')
 
 
+class DateGamesSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    games = NBAScheduleSerializer(many=True)
+
+
 class NBATeamStatsSerializer(serializers.Serializer):
     team = NBATeamSerializer()
     avg_points_per_game = serializers.FloatField()

@@ -72,6 +72,11 @@ class NHLScheduleSerializer(NHLGameListSerializer):
         fields = NHLGameListSerializer.Meta.fields + ('time', 'arena', 'type')
 
 
+class DateGamesSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    games = NHLScheduleSerializer(many=True)
+
+
 class NHLTeamStatsSerializer(serializers.Serializer):
     team = NHLTeamsSerializer()
     avg_points_per_game = serializers.FloatField()

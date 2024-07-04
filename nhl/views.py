@@ -31,11 +31,22 @@ class NHLScheduleView(GamesView):
     serializer_class = serializers.NHLScheduleSerializer
     lookup_field = 'slug'
 
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
         today = timezone.now().date()
+
         unique_dates = NHLGame.objects.filter(status='Waiting', date__gte=today).values_list(
             'date', flat=True).distinct().order_by('date')[:3]
-        return NHLGame.objects.filter(status='Waiting', date__in=unique_dates).order_by('date', 'time')
+
+        date_games = []
+        for date in unique_dates:
+            games = NHLGame.objects.filter(status='Waiting', date=date).order_by('date', 'time')
+            date_games.append({
+                'date': date,
+                'games': games
+            })
+
+        serializer = serializers.DateGamesSerializer(date_games, many=True)
+        return Response(serializer.data)
 
 
 class NHLGamesDateView(ReadOnlyModelViewSet):
