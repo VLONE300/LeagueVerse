@@ -3,8 +3,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-from core.models import League
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -53,3 +51,9 @@ class Favorite(models.Model):
 
     def __str__(self):
         return str(self.content_object)
+
+
+class TelegramUser(models.Model):
+    telegram_id = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

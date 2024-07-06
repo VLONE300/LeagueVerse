@@ -1,6 +1,5 @@
 from django.db import models
-
-from core.utils import nba_slug_team_name
+from users.models import TelegramUser
 
 
 class League(models.Model):
@@ -55,3 +54,11 @@ class Game(models.Model):
 
     class Meta:
         abstract = True
+
+
+class TelegramSubscription(models.Model):
+    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE)
+    league = models.ForeignKey(League, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} - {self.league.name}"
