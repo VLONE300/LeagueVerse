@@ -8,7 +8,7 @@ from users.models import Favorite
 class LeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = League
-        fields = ('id', 'name', 'logo')
+        fields = ('id', 'name', 'logo', 'background')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

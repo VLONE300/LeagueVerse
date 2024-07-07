@@ -5,6 +5,7 @@ from users.models import TelegramUser
 class League(models.Model):
     name = models.CharField(max_length=55)
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
+    background = models.ImageField(upload_to='backgrounds/', null=True, blank=True)
 
     def __str__(self):
         return self.name
