@@ -1,17 +1,16 @@
 from rest_framework import serializers
-
-from nhl.models import NHLStanding, NHLTeam, NHLGame, NHLTeamStats, NHLBoxScore
+from nhl.models import NHLStanding, NHLTeam, NHLGame, NHLBoxScore
 from nhl.utils import get_nhl_box_score
 
 
-class NHLTeamsSerializer(serializers.ModelSerializer):
+class NHLTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = NHLTeam
         fields = ('id', 'name', 'conference', 'division', 'team_logo')
 
 
 class NHLStandingsSerializer(serializers.ModelSerializer):
-    team = NHLTeamsSerializer()
+    team = NHLTeamSerializer()
 
     class Meta:
         model = NHLStanding
@@ -19,10 +18,13 @@ class NHLStandingsSerializer(serializers.ModelSerializer):
                   'points_percentage', 'goals_for', 'goals_against', 'wins_of_regulation')
 
 
-class NBAGameStatsSerializer(serializers.ModelSerializer):
+class NHLGameListSerializer(serializers.ModelSerializer):
+    visitor_team = NHLTeamSerializer()
+    home_team = NHLTeamSerializer()
+
     class Meta:
-        model = NHLTeamStats
-        fields = '__all__'
+        model = NHLGame
+        fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'slug')
 
 
 class NHLBoxScoreSerializer(serializers.ModelSerializer):
@@ -37,19 +39,10 @@ class NHLBoxScoreSerializer(serializers.ModelSerializer):
         return stats
 
 
-class NHLGameListSerializer(serializers.ModelSerializer):
-    visitor_team = NHLTeamsSerializer()
-    home_team = NHLTeamsSerializer()
-
-    class Meta:
-        model = NHLGame
-        fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'slug')
-
-
 class NHLGameDetailSerializer(serializers.ModelSerializer):
     box_score = NHLBoxScoreSerializer()
-    visitor_team = NHLTeamsSerializer()
-    home_team = NHLTeamsSerializer()
+    visitor_team = NHLTeamSerializer()
+    home_team = NHLTeamSerializer()
 
     class Meta:
         model = NHLGame
@@ -76,8 +69,5 @@ class DateGamesSerializer(serializers.Serializer):
 
 
 class NHLTeamStatsSerializer(serializers.Serializer):
-    team = NHLTeamsSerializer()
+    team = NHLTeamSerializer()
     avg_points_per_game = serializers.FloatField()
-
-    def get_team(self, obj):
-        return obj.team.name

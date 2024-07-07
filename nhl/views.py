@@ -8,7 +8,7 @@ from nhl.utils import get_nhl_stats
 
 class NHLTeamsView(ReadOnlyModelViewSet):
     queryset = NHLTeam.objects.all()
-    serializer_class = serializers.NHLTeamsSerializer
+    serializer_class = serializers.NHLTeamSerializer
 
 
 class NHLStandingsView(StandingsView):

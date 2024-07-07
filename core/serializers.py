@@ -1,8 +1,7 @@
 from rest_framework import serializers
-
 from core.models import League
 from nba.serializers import NBATeamSerializer
-from nhl.serializers import NHLTeamsSerializer
+from nhl.serializers import NHLTeamSerializer
 from users.models import Favorite
 
 
@@ -23,7 +22,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         if obj.content_type.model == 'nbateam':
             return NBATeamSerializer(obj.content_object).data
         elif obj.content_type.model == 'nhlteam':
-            return NHLTeamsSerializer(obj.content_object).data
+            return NHLTeamSerializer(obj.content_object).data
         elif obj.content_type.model == 'league':
             return LeagueSerializer(obj.content_object).data
         return None

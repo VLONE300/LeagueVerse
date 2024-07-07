@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from nba.models import NBAStanding, NBATeam, NBAGame, NBATeamStats, NBABoxScore
+from nba.models import NBAStanding, NBATeam, NBAGame, NBABoxScore
 from nba.utils import get_nba_box_score
 
 
@@ -16,12 +16,6 @@ class NBAStandingsSerializer(serializers.ModelSerializer):
         model = NBAStanding
         fields = ('team', 'wins', 'losses', 'winning_percentage', 'points_percentage_game', 'games_back',
                   'oop_points_percentage_game',)
-
-
-class NBAGameStatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NBATeamStats
-        fields = '__all__'
 
 
 class NBAGameListSerializer(serializers.ModelSerializer):

@@ -3,7 +3,6 @@ from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-
 from core.models import League
 from core.serializers import LeagueSerializer
 
