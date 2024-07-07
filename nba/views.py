@@ -30,7 +30,7 @@ class NBAScheduleView(GamesView):
     lookup_field = 'slug'
 
     def list(self, request, *args, **kwargs):
-        return self.list_schedule(NBAGame, serializers.DateGamesSerializer)
+        return self.list_schedule(NBAGame, serializers.DateGamesSerializer, request)
 
 
 class NBAGamesDateView(GamesView):
