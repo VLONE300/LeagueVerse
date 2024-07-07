@@ -35,6 +35,8 @@ services:
       TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      HOCKEY_URL: ${HOCKEY_URL}
+      BASKETBALL_URL: ${BASKETBALL_URL}
     volumes:
       - static_volume:/app/static/
     restart: on-failure:5
@@ -67,6 +69,8 @@ services:
       TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      HOCKEY_URL: ${HOCKEY_URL}
+      BASKETBALL_URL: ${BASKETBALL_URL}
     command: sh -c "python manage.py bot"
     restart: on-failure:5
 
@@ -92,6 +96,7 @@ services:
     depends_on:
       - redis
       - postgres
+    stop_grace_period: 60s
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -107,6 +112,8 @@ services:
       TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      HOCKEY_URL: ${HOCKEY_URL}
+      BASKETBALL_URL: ${BASKETBALL_URL}
 
   celery-beat:
     build:
@@ -116,6 +123,7 @@ services:
       - celery
       - redis
       - postgres
+    stop_grace_period: 60s
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
@@ -131,6 +139,8 @@ services:
       TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+      HOCKEY_URL: ${HOCKEY_URL}
+      BASKETBALL_URL: ${BASKETBALL_URL}
 
 volumes:
   pg_data:
