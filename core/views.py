@@ -35,7 +35,7 @@ class GamesView(ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['date']
 
-    def list_schedule(self, model, serializer_class):
+    def list_schedule(self, model, serializer_class, request):
         today = timezone.now().date()
 
         unique_dates = model.objects.filter(status='Waiting', date__gte=today).values_list(
@@ -49,7 +49,7 @@ class GamesView(ReadOnlyModelViewSet):
                 'games': games
             })
 
-        serializer = serializer_class(date_games, many=True)
+        serializer = serializer_class(date_games, many=True, context={'request': request})
         return Response(serializer.data)
 
     def list_game_dates(self, model):
