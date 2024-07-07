@@ -13,12 +13,22 @@ class LeagueView(ReadOnlyModelViewSet):
     lookup_field = 'name'
 
 
+class TeamView(ReadOnlyModelViewSet):
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = {}
+        for team in queryset:
+            division = team.division
+            if division not in data:
+                data[division] = []
+            serializer = self.get_serializer(team)
+            data[division].append(serializer.data)
+        return Response(data)
+
+
 class StandingsView(ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        ordering = self.request.query_params.get('ordering', None)
-        if ordering:
-            queryset = queryset.order_by(ordering)
 
         data = {}
         for standing in queryset:

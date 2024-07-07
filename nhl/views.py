@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from core.views import StandingsView, GamesView
+from core.views import StandingsView, GamesView, TeamView
 from nhl.models import NHLTeam, NHLStanding, NHLGame
 from nhl import serializers
 from nhl.utils import get_nhl_stats
 
 
-class NHLTeamsView(ReadOnlyModelViewSet):
-    queryset = NHLTeam.objects.all()
+class NHLTeamsView(TeamView):
     serializer_class = serializers.NHLTeamSerializer
+    queryset = NHLTeam.objects.all()
 
 
 class NHLStandingsView(StandingsView):

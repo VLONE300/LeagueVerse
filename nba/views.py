@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from core.views import StandingsView, GamesView
+from core.views import StandingsView, GamesView, TeamView
 from nba.models import NBAStanding, NBATeam, NBAGame
 from nba import serializers
 from nba.utils import get_nba_stats
 
 
-class NBATeamsView(ReadOnlyModelViewSet):
-    queryset = NBATeam.objects.all()
+class NBATeamsView(TeamView):
     serializer_class = serializers.NBATeamSerializer
+    queryset = NBATeam.objects.all()
 
 
 class NBAStandingsView(StandingsView):
