@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from nba.models import NBAStanding, NBATeam, NBAGame, NBATeamStats, NBABoxScore
+from nba.utils import get_nba_box_score
 
 
 class NBATeamSerializer(serializers.ModelSerializer):
@@ -23,15 +24,6 @@ class NBAGameStatsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NBABoxScoreSerializer(serializers.ModelSerializer):
-    visitor_team_stats = NBAGameStatsSerializer()
-    home_team_stats = NBAGameStatsSerializer()
-
-    class Meta:
-        model = NBABoxScore
-        fields = '__all__'
-
-
 class NBAGameListSerializer(serializers.ModelSerializer):
     visitor_team = NBATeamSerializer()
     home_team = NBATeamSerializer()
@@ -40,11 +32,17 @@ class NBAGameListSerializer(serializers.ModelSerializer):
         model = NBAGame
         fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'slug')
 
-    def get_visitor_team(self, obj):
-        return obj.visitor_team.name
 
-    def get_home_team(self, obj):
-        return obj.home_team.name
+class NBABoxScoreSerializer(serializers.ModelSerializer):
+    stats = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NBABoxScore
+        fields = ['stats']
+
+    def get_stats(self, obj):
+        stats = get_nba_box_score(obj)
+        return stats
 
 
 class NBAGameDetailSerializer(serializers.ModelSerializer):
@@ -58,11 +56,11 @@ class NBAGameDetailSerializer(serializers.ModelSerializer):
             'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'time', 'status', 'arena', 'type',
             'box_score')
 
-    def get_visitor_team(self, obj):
-        return obj.visitor_team.name
-
-    def get_home_team(self, obj):
-        return obj.home_team.name
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        box_score_data = representation.pop('box_score')['stats']
+        representation['box_score'] = box_score_data
+        return representation
 
 
 class NBAScheduleSerializer(NBAGameListSerializer):

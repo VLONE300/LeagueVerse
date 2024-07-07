@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from nhl.models import NHLStanding, NHLTeam, NHLGame, NHLTeamStats, NHLBoxScore
+from nhl.utils import get_nhl_box_score
 
 
 class NHLTeamsSerializer(serializers.ModelSerializer):
@@ -25,12 +26,15 @@ class NBAGameStatsSerializer(serializers.ModelSerializer):
 
 
 class NHLBoxScoreSerializer(serializers.ModelSerializer):
-    visitor_team_stats = NBAGameStatsSerializer()
-    home_team_stats = NBAGameStatsSerializer()
+    stats = serializers.SerializerMethodField()
 
     class Meta:
         model = NHLBoxScore
-        fields = '__all__'
+        fields = ['stats']
+
+    def get_stats(self, obj):
+        stats = get_nhl_box_score(obj)
+        return stats
 
 
 class NHLGameListSerializer(serializers.ModelSerializer):
@@ -40,12 +44,6 @@ class NHLGameListSerializer(serializers.ModelSerializer):
     class Meta:
         model = NHLGame
         fields = ('id', 'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'slug')
-
-    def get_visitor_team(self, obj):
-        return obj.visitor_team.name
-
-    def get_home_team(self, obj):
-        return obj.home_team.name
 
 
 class NHLGameDetailSerializer(serializers.ModelSerializer):
@@ -59,11 +57,11 @@ class NHLGameDetailSerializer(serializers.ModelSerializer):
             'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'time', 'status', 'arena', 'type',
             'box_score')
 
-    def get_visitor_team(self, obj):
-        return obj.visitor_team.name
-
-    def get_home_team(self, obj):
-        return obj.home_team.name
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        box_score_data = representation.pop('box_score')['stats']
+        representation['box_score'] = box_score_data
+        return representation
 
 
 class NHLScheduleSerializer(NHLGameListSerializer):

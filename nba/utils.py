@@ -87,3 +87,38 @@ def get_nba_stats(teams):
         'Three Point Percentage': team_3fgp(teams),
         'Free Throw Percentage': team_ftp(teams)
     }
+
+
+def get_nba_box_score(obj):
+    return [
+        {'name': 'Field Goals',
+         'visitor_value': [obj.visitor_team_stats.field_goals, obj.visitor_team_stats.field_goal_attempts,
+                           obj.visitor_team_stats.field_goals_percentage],
+         'home_value': [obj.home_team_stats.field_goals, obj.home_team_stats.field_goal_attempts,
+                        obj.home_team_stats.field_goals_percentage]},
+        {'name': '3-Point FGs', 'visitor_value': [obj.visitor_team_stats.three_point_field_goals,
+                                                  obj.visitor_team_stats.three_point_field_goal_attempts,
+                                                  obj.visitor_team_stats.three_point_field_goals_percentage],
+         'home_value': [obj.home_team_stats.three_point_field_goals,
+                        obj.home_team_stats.three_point_field_goal_attempts,
+                        obj.home_team_stats.three_point_field_goals_percentage]},
+        {'name': 'Free Throws',
+         'visitor_value': [obj.visitor_team_stats.free_throws, obj.visitor_team_stats.free_throw_attempts,
+                           obj.visitor_team_stats.free_throw_percentage],
+         'home_value': [obj.home_team_stats.free_throws, obj.home_team_stats.free_throw_attempts,
+                        obj.home_team_stats.free_throw_percentage]},
+        {'name': 'Personal Fouls', 'visitor_value': obj.visitor_team_stats.personal_fouls,
+         'home_value': obj.home_team_stats.personal_fouls},
+        {'name': 'Total Rebounds', 'visitor_value': obj.visitor_team_stats.total_rebounds,
+         'home_value': obj.home_team_stats.total_rebounds},
+        {'name': 'Offensive Rebounds', 'visitor_value': obj.visitor_team_stats.offensive_rebounds,
+         'home_value': obj.home_team_stats.offensive_rebounds},
+        {'name': 'Turnovers', 'visitor_value': obj.visitor_team_stats.turnovers,
+         'home_value': obj.home_team_stats.turnovers},
+        {'name': 'Assists', 'visitor_value': obj.visitor_team_stats.assists,
+         'home_value': obj.home_team_stats.assists},
+        {'name': 'Blocks', 'visitor_value': obj.visitor_team_stats.blocks,
+         'home_value': obj.home_team_stats.blocks},
+        {'name': 'Steals', 'visitor_value': obj.visitor_team_stats.steals,
+         'home_value': obj.home_team_stats.steals},
+    ]
