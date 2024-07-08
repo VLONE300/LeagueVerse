@@ -6,7 +6,7 @@ from nba.utils import get_nba_box_score
 class NBATeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = NBATeam
-        fields = ('id', 'name', 'conference', 'division', 'team_logo')
+        fields = ('id', 'name', 'team_logo')
 
 
 class NBAStandingsSerializer(serializers.ModelSerializer):
@@ -46,9 +46,7 @@ class NBAGameDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NBAGame
-        fields = (
-            'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'time', 'status', 'arena', 'type',
-            'box_score')
+        fields = ('date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'box_score')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

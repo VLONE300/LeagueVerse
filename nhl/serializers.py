@@ -6,7 +6,7 @@ from nhl.utils import get_nhl_box_score
 class NHLTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = NHLTeam
-        fields = ('id', 'name', 'conference', 'division', 'team_logo')
+        fields = ('id', 'name', 'team_logo')
 
 
 class NHLStandingsSerializer(serializers.ModelSerializer):
@@ -46,9 +46,7 @@ class NHLGameDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NHLGame
-        fields = (
-            'date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'time', 'status', 'arena', 'type',
-            'box_score')
+        fields = ('date', 'visitor_team', 'visitor_pts', 'home_team', 'home_pts', 'box_score')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

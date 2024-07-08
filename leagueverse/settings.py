@@ -32,6 +32,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '185.244.50.201']
 
+INTERNAL_IPS = ["127.0.0.1"]
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 # Application definition
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django_filters',
     'flower',
     'corsheaders',
+    'debug_toolbar',
 
     'parsers.apps.ParsersConfig',
     'users.apps.UsersConfig',
@@ -67,6 +70,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar_force.middleware.ForceDebugToolbarMiddleware',
 ]
 
 REST_FRAMEWORK = {
