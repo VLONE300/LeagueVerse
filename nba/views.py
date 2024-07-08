@@ -12,12 +12,12 @@ class NBATeamsView(TeamView):
 
 
 class NBAStandingsView(StandingsView):
-    queryset = NBAStanding.objects.all().order_by('-winning_percentage')
+    queryset = NBAStanding.objects.all().select_related('team').order_by('-winning_percentage')
     serializer_class = serializers.NBAStandingsSerializer
 
 
 class NBAScoreView(GamesView):
-    queryset = NBAGame.objects.all().order_by('-date')
+    queryset = NBAGame.objects.all().select_related('visitor_team').select_related('home_team').order_by('-date')
     lookup_field = 'slug'
 
     def get_serializer_class(self):

@@ -53,7 +53,9 @@ class GamesView(ReadOnlyModelViewSet):
 
         date_games = []
         for date in unique_dates:
-            games = model.objects.filter(status='Waiting', date=date).order_by('date', 'time')
+            games = model.objects.filter(status='Waiting', date=date).select_related('visitor_team').select_related(
+                'home_team').order_by('date', 'time')
+
             date_games.append({
                 'date': date,
                 'games': games

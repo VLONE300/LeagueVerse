@@ -13,11 +13,11 @@ class NHLTeamsView(TeamView):
 
 class NHLStandingsView(StandingsView):
     serializer_class = serializers.NHLStandingsSerializer
-    queryset = NHLStanding.objects.all().order_by('-wins')
+    queryset = NHLStanding.objects.all().select_related('team').order_by('-wins')
 
 
 class NHLScoreView(GamesView):
-    queryset = NHLGame.objects.all().order_by('-date')
+    queryset = NHLGame.objects.all().select_related('visitor_team').select_related('home_team').order_by('-date')
     lookup_field = 'slug'
 
     def get_serializer_class(self):
