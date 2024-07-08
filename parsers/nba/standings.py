@@ -33,8 +33,8 @@ async def scrape_nba_standings(session: ClientSession, season, sleep: int = 5, r
     return data
 
 
-async def update_nba_standings(session: ClientSession,season):
-    standings_data = await scrape_nba_standings(session,season)
+async def update_nba_standings(session: ClientSession, season):
+    standings_data = await scrape_nba_standings(session, season)
     if standings_data is None:
         return
 

@@ -78,7 +78,7 @@ async def update_nba_matches(session: ClientSession, season: int):
 
 
 async def save_nba_game(date_game, visitor_team, home_team, visitor_pts, home_pts, box_score, status, time, arena):
-    playoff_cutoff = date(2024, 4, 14)
+    playoff_cutoff = date(2024, 4, 15)
     game_type = 'Playoff' if date_game >= playoff_cutoff else 'Regular Season'
 
     await sync_to_async(NBAGame.objects.update_or_create)(
