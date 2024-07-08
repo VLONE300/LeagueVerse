@@ -1,5 +1,61 @@
 from asgiref.sync import sync_to_async
-from django.db.models import Avg
+from django.db.models import Avg, Sum
+
+
+def calculate_top_5_avg_stat(model, teams, visitor_stat, home_stat, multiplier=1):
+    visitor_games = model.objects.filter(type='Regular Season')
+    home_games = model.objects.filter(type='Regular Season')
+
+    visitor_stats = visitor_games.values('visitor_team').annotate(avg_value=Avg(visitor_stat))
+    home_stats = home_games.values('home_team').annotate(avg_value=Avg(home_stat))
+
+    combined_stats = {}
+
+    for stat in visitor_stats:
+        team_id = stat['visitor_team']
+        combined_stats[team_id] = combined_stats.get(team_id, 0) + stat['avg_value']
+
+    for stat in home_stats:
+        team_id = stat['home_team']
+        combined_stats[team_id] = combined_stats.get(team_id, 0) + stat['avg_value']
+
+    stat_data = []
+    for team in teams:
+        avg_stat = combined_stats.get(team.id, 0) / 2 * multiplier
+        stat_data.append({
+            'team': team.name,
+            'value': round(avg_stat, 1)
+        })
+
+    return sorted(stat_data, key=lambda x: x['value'], reverse=True)[:5]
+
+
+def calculate_top_5_sum_stat(model, teams, visitor_stat, home_stat):
+    visitor_games = model.objects.filter(type='Regular Season')
+    home_games = model.objects.filter(type='Regular Season')
+
+    visitor_stats = visitor_games.values('visitor_team').annotate(total=Sum(visitor_stat))
+    home_stats = home_games.values('home_team').annotate(total=Sum(home_stat))
+
+    combined_stats = {}
+
+    for stat in visitor_stats:
+        team_id = stat['visitor_team']
+        combined_stats[team_id] = combined_stats.get(team_id, 0) + stat['total']
+
+    for stat in home_stats:
+        team_id = stat['home_team']
+        combined_stats[team_id] = combined_stats.get(team_id, 0) + stat['total']
+
+    stat_data = []
+    for team in teams:
+        total_stat = combined_stats.get(team.id, 0)
+        stat_data.append({
+            'team': team.name,
+            'value': round(total_stat, 1)
+        })
+
+    return sorted(stat_data, key=lambda x: x['value'], reverse=True)[:5]
 
 
 def get_games(model, team, is_home):
