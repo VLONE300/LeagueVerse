@@ -2,7 +2,7 @@ from asgiref.sync import sync_to_async
 from django.db.models import Avg, Sum
 
 
-def calculate_top_5_avg_stat(model, teams, visitor_stat, home_stat, multiplier=1):
+def calculate_top_5_avg_stat(model, teams, visitor_stat, home_stat, digits=1, multiplier=1):
     visitor_games = model.objects.filter(type='Regular Season')
     home_games = model.objects.filter(type='Regular Season')
 
@@ -24,7 +24,7 @@ def calculate_top_5_avg_stat(model, teams, visitor_stat, home_stat, multiplier=1
         avg_stat = combined_stats.get(team.id, 0) / 2 * multiplier
         stat_data.append({
             'team': team.name,
-            'value': round(avg_stat, 1)
+            'value': round(avg_stat, digits)
         })
 
     return sorted(stat_data, key=lambda x: x['value'], reverse=True)[:5]

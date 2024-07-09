@@ -4,10 +4,10 @@ from core.utils import calculate_top_5_sum_stat, calculate_top_5_avg_stat
 
 def get_nhl_stats(teams):
     stats = {
-        'Goals Per Game': calculate_top_5_avg_stat(NHLGame, teams, 'visitor_pts', 'home_pts'),
+        'Goals Per Game': calculate_top_5_avg_stat(NHLGame, teams, 'visitor_pts', 'home_pts', 2),
 
         'Assists': calculate_top_5_avg_stat(NHLGame, teams, 'box_score__visitor_team_stats__assists',
-                                            'box_score__home_team_stats__assists'),
+                                            'box_score__home_team_stats__assists',2),
 
         'Shots': calculate_top_5_avg_stat(NHLGame, teams, 'box_score__visitor_team_stats__shots_on_goal',
                                           'box_score__home_team_stats__shots_on_goal'),
