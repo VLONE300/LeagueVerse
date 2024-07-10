@@ -34,7 +34,7 @@ def get_nba_stats(teams):
             teams,
             'box_score__visitor_team_stats__field_goals_percentage',
             'box_score__home_team_stats__field_goals_percentage',
-            100),
+            1),
         'Three Pointers Made': calculate_top_5_sum_stat(
             NBAGame,
             teams,
@@ -45,13 +45,13 @@ def get_nba_stats(teams):
             teams,
             'box_score__visitor_team_stats__three_point_field_goals_percentage',
             'box_score__home_team_stats__three_point_field_goals_percentage',
-            100),
+            1),
         'Free Throw Percentage': calculate_top_5_avg_stat(
             NBAGame,
             teams,
             'box_score__visitor_team_stats__free_throw_percentage',
             'box_score__home_team_stats__free_throw_percentage',
-            100)
+            1)
     }
     return stats
 
@@ -60,21 +60,21 @@ def get_nba_box_score(obj):
     return [
         {'name': 'Field Goals',
          'visitor_value': [obj.visitor_team_stats.field_goals, obj.visitor_team_stats.field_goal_attempts,
-                           round(obj.visitor_team_stats.field_goals_percentage * 100, 1)],
+                           round(obj.visitor_team_stats.field_goals_percentage, 1)],
          'home_value': [obj.home_team_stats.field_goals, obj.home_team_stats.field_goal_attempts,
-                        round(obj.home_team_stats.field_goals_percentage * 100, 1)]},
+                        round(obj.home_team_stats.field_goals_percentage, 1)]},
         {'name': '3-Point FGs',
          'visitor_value': [obj.visitor_team_stats.three_point_field_goals,
                            obj.visitor_team_stats.three_point_field_goal_attempts,
-                           round(obj.visitor_team_stats.three_point_field_goals_percentage * 100, 1)],
+                           round(obj.visitor_team_stats.three_point_field_goals_percentage, 1)],
          'home_value': [obj.home_team_stats.three_point_field_goals,
                         obj.home_team_stats.three_point_field_goal_attempts,
-                        round(obj.home_team_stats.three_point_field_goals_percentage * 100, 1)]},
+                        round(obj.home_team_stats.three_point_field_goals_percentage, 1)]},
         {'name': 'Free Throws',
          'visitor_value': [obj.visitor_team_stats.free_throws, obj.visitor_team_stats.free_throw_attempts,
-                           round(obj.visitor_team_stats.free_throw_percentage * 100, 1)],
+                           round(obj.visitor_team_stats.free_throw_percentage, 1)],
          'home_value': [obj.home_team_stats.free_throws, obj.home_team_stats.free_throw_attempts,
-                        round(obj.home_team_stats.free_throw_percentage * 100, 1)]},
+                        round(obj.home_team_stats.free_throw_percentage, 1)]},
 
         {'name': 'Personal Fouls', 'visitor_value': obj.visitor_team_stats.personal_fouls,
          'home_value': obj.home_team_stats.personal_fouls},
